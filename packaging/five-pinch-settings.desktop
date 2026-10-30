@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Five Pinch Settings
+Comment=Configure five-finger touchpad gestures
+Exec=five-pinch-settings
+Icon=input-touchpad
+Terminal=false
+Categories=Settings;HardwareSettings;
+Keywords=Touchpad;Gestures;Pinch;
+OnlyShowIn=GNOME;
+StartupNotify=true

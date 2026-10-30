@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.five-pinch" path="/org/gnome/shell/extensions/five-pinch/">
+    <key name="enabled" type="b"><default>false</default><summary>Enable recognition</summary></key>
+    <key name="pinch-in" type="s"><choices><choice value="disabled"/><choice value="diagnostic"/><choice value="apps"/><choice value="apps-close"/><choice value="overview"/><choice value="hide"/></choices><default>'disabled'</default><summary>Pinch inward action</summary></key>
+    <key name="pinch-out" type="s"><choices><choice value="disabled"/><choice value="diagnostic"/><choice value="apps"/><choice value="apps-close"/><choice value="overview"/><choice value="hide"/></choices><default>'disabled'</default><summary>Pinch outward action</summary></key>
+    <key name="status" type="s"><default>'Extension has not started yet.'</default><summary>Current reader status</summary></key>
+    <key name="last-event" type="s"><default>'No gesture detected yet.'</default><summary>Last recognized gesture</summary></key>
+  </schema>
+</schemalist>

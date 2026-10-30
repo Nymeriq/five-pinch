@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+schemas/gschemas.compiled
+*.deb
+*.deb.sha256
+*.shell-extension.zip
+work/
+.dist/

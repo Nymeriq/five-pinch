@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+case "$1" in
+    configure)
+        if command -v udevadm >/dev/null 2>&1; then
+            udevadm control --reload-rules || true
+            udevadm trigger --action=change --subsystem-match=input --property-match=ID_INPUT_TOUCHPAD=1 || true
+        fi
+        echo 'Five Pinch installed. Open Five Pinch Settings from your applications.'
+        echo 'A logout/login may be needed. Existing manual installations can be backed up by the setup app.'
+        ;;
+esac
+exit 0

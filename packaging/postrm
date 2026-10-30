@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+case "$1" in
+    remove|purge)
+        if command -v udevadm >/dev/null 2>&1; then
+            udevadm control --reload-rules || true
+            udevadm trigger --action=change --subsystem-match=input --property-match=ID_INPUT_TOUCHPAD=1 || true
+        fi
+        echo 'Five Pinch removed. Log out and back in to unload any running extension.'
+        ;;
+esac
+exit 0
