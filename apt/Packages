@@ -34,3 +34,21 @@ Description: Experimental five-finger pinch gestures for GNOME 50
  touchpad recognizer. Any udev-classified touchpad can be tried, regardless of brand or bus.
  Requires GNOME 50 on Wayland and at least five coordinate slots.
 
+Package: five-pinch
+Version: 0.5.1
+Architecture: all
+Maintainer: Five Pinch contributors
+Installed-Size: 48
+Depends: gnome-shell (>= 50), gnome-shell (<< 51), python3 (>= 3.10), python3-gi, gir1.2-adw-1, libglib2.0-bin, dconf-gsettings-backend | gsettings-backend, udev
+Filename: pool/five-pinch_0.5.1_all.deb
+Size: 17100
+MD5sum: 612f6234a4e8cbc4d03d17928496c67a
+SHA1: 5c1c57b1ac3132dc362084e8115cd1955de00725
+SHA256: c3eff7469be539883641794f8a3acace7f906f77d57d6fbac4ed64b0cdd0035a
+Section: gnome
+Priority: optional
+Description: Experimental five-finger pinch gestures for GNOME 50
+ English settings, app-grid and overview actions, and a supervised read-only
+ touchpad recognizer. Any udev-classified touchpad can be tried, regardless of brand or bus.
+ Requires GNOME 50 on Wayland and at least five coordinate slots.
+
