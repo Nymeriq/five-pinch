@@ -6,3 +6,5 @@ schemas/gschemas.compiled
 *.shell-extension.zip
 work/
 .dist/
+*.jsonl
+*-backup*.json

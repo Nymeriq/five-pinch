@@ -6,6 +6,9 @@ Experimental five-finger pinch gestures for Apple SPI touchpads on GNOME 50 / Wa
 
 The settings UI, action names, status messages and setup application are in English.
 
+The repository also includes the [development history and diagnostic tools](docs/DEVELOPMENT.md),
+the complete recognizer and extension source, Debian packaging and automated tests.
+
 ## Install the Debian package
 
 From the folder containing the downloaded package:
