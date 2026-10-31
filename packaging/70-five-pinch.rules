@@ -1,3 +1,3 @@
-# Experimental Apple SPI touchpads: exact kernel name, SPI bus and touchpad tag.
+# Let any udev-classified touchpad be tried, regardless of vendor, name or bus.
 # No keyboard rules, input group membership, or world-readable device nodes.
-SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT_TOUCHPAD}=="1", ATTRS{name}=="Apple SPI Touchpad", ATTRS{id/bustype}=="001c", TAG+="uaccess"
+SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT_TOUCHPAD}=="1", TAG+="uaccess"

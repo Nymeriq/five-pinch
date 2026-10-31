@@ -71,6 +71,13 @@ class NativeInputTests(unittest.TestCase):
         self.assertEqual([r['direction'] for r in results], ['in'])
         self.assertEqual(self.send(self.hand(.7), self.start + .11), [])
 
+    def test_normalized_coordinates_can_recognize_pinch(self):
+        self.pad.state = Slots(0, 10, 20, 10)
+        self.send([(0, 0, 0)])
+        self.send(self.hand(ids=True))
+        results = self.send(self.hand(.75), self.start + .1)
+        self.assertEqual([r['direction'] for r in results], ['in'])
+
     def test_startup_contacts_not_armed(self):
         self.send(self.hand(ids=True))
         self.assertEqual(self.send(self.hand(.75), self.start + .1), [])

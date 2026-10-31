@@ -51,8 +51,8 @@ def main():
             action = Gtk.Button(css_classes=['suggested-action'])
             box.append(action)
             box.append(Gtk.Label(wrap=True, xalign=0,
-                label='Experimental: GNOME 50, Wayland, Apple SPI Touchpad with five or more coordinate slots. '
-                      'Other SPI models are accepted after capability checks but are not yet hardware-tested.'))
+                label='Experimental: GNOME 50 / Wayland. Try any touchpad with five tracked contacts. '
+                      'Tested on MacBook Pro 2017 only. Community tests and pull requests are welcome.'))
             window.set_content(box)
             local = Path(os.environ.get('XDG_DATA_HOME', str(Path.home() / '.local/share'))) / 'gnome-shell/extensions' / UUID
             backup_root = Path(os.environ.get('XDG_STATE_HOME', str(Path.home() / '.local/state'))) / 'five-pinch/backups'

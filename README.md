@@ -1,140 +1,131 @@
 # Five Pinch
 
-Experimental five-finger pinch gestures for Apple SPI touchpads on GNOME 50 / Wayland.
+Five-finger pinch gestures for **GNOME 50 on Wayland**. Try it on your touchpad —
+there is no brand, model, vendor/product ID or bus-type allowlist.
 
 [Download the Debian package](https://github.com/Nymeriq/five-pinch/releases/latest) · [MIT license](LICENSE)
 
-The settings UI, action names, status messages and setup application are in English.
+**Tested on:** 2017 MacBook Pro, Apple SPI Touchpad (`001c:06cb:0557`).
+Everything else is welcome to try, but not yet verified. If it works on your
+hardware, please send a documentation pull request. If you improve support,
+please send a code PR too. No claim of universal compatibility is implied.
 
-The repository also includes the [development history and diagnostic tools](docs/DEVELOPMENT.md),
-the complete recognizer and extension source, Debian packaging and automated tests.
+## Install
 
-## Install the Debian package
-
-From the folder containing the downloaded package:
+Download the `.deb` from Releases and, from that folder, run:
 
 ```bash
-sudo apt install ./five-pinch_0.4.0_all.deb
+sudo apt install ./five-pinch_0.5.0_all.deb
 ```
 
-Open **Five Pinch Settings** from your applications. On a new installation,
-log out and back in if GNOME has not discovered the extension yet. Then select
-**Enable and open settings**. Start with **Detect only (no action)** for both
-directions and turn on **Enable recognition**. Lift all fingers between gestures.
+Open **Five Pinch Settings**. Log out and back in if GNOME has not discovered
+it yet, then select **Enable and open settings**. Recognition and both actions
+are disabled by default on a fresh installation; upgrades preserve your settings.
 
-Suggested actions once detection works:
+Start with **Detect only (no action)** for both directions, enable recognition,
+and lift all fingers between gestures. If detection works, try:
 
 - **Pinch in → Open app grid**
 - **Pinch out → Close app grid**
 
-**Close app grid** returns to the desktop only when the app grid is selected.
-**Close overview** is a separate action and also closes the window overview.
-Both options remain independently selectable.
+**Close app grid** closes a selected app grid to the desktop; it does not close
+an ordinary window overview. **Close overview** is a separate action.
 
-### Upgrading the previous manual installation
+With multiple touchpads, automatic mode picks the first usable event device.
+The optional **Touchpad device** field accepts `/dev/input/eventN` to choose
+another one. Leave it blank for automatic selection. Event numbers can change
+on reconnect/reboot, so clear or update a manual override if necessary.
 
-A user installation in `~/.local/share/gnome-shell/extensions/five-pinch@local.codex`
-overrides the system version installed by the package. The setup application
-detects this and offers **Use packaged version**. This disables the old extension,
-backs up its files to `~/.local/state/five-pinch/backups/`, and preserves all
-gesture settings. XDG data/state locations are respected when set.
+### Previous manual installations
 
-After switching, save your work and log out and back in. Open Five Pinch Settings
-again and enable the packaged extension. Do not restore the old user folder over
-the packaged version unless you deliberately want to revert to the manual copy.
+A manual user copy overrides the Debian package. **Use packaged version** in
+the setup application disables that copy and backs it up under
+`~/.local/state/five-pinch/backups/`, preserving gesture settings. Log out and
+back in, then open Five Pinch Settings again. XDG locations are respected.
+Root package scripts never modify user home directories or enable extensions.
 
-The package's root installation scripts never edit user home directories,
-change user gesture preferences, or enable extensions for users.
+## What hardware can try it?
 
-### Removal
+Any input device classified by Linux udev as a **touchpad**, regardless of its
+manufacturer, model name, USB/Bluetooth/I2C/SPI/PS2 bus, or product ID. The package
+can be installed without detecting a particular laptop; missing hardware is
+reported in the settings instead of blocking package installation.
 
-Disable Five Pinch in the Extensions app first, then:
+There are still basic data requirements, not a hardware whitelist:
+
+- Linux Protocol B multitouch with five independently positioned contacts.
+- Valid X/Y coordinate ranges and per-contact tracking IDs.
+- Read access to the selected touchpad in the active local session.
+- GNOME Shell 50 on Wayland (not macOS or X11).
+
+A device that counts five fingers but only reports two positions cannot supply
+an actual five-finger pinch. The recognizer reports this and tries another
+candidate instead of treating partial data as five tracked fingers.
+
+Physical axis resolution is optional. When reported, coordinates use millimetres.
+Otherwise both axes use an explicitly labelled virtual **100 × 100** coordinate
+space; the same three-unit distance threshold is then relative to that space,
+not three physical millimetres. This fallback is approximate and may need tuning.
+The status/probe output shows which coordinate mode is in use.
+
+No additional device has been tested just because its name passes discovery.
+USB, Bluetooth and non-Apple support are open experiments, not verified claims.
+See [CONTRIBUTING](CONTRIBUTING.md) to report results or submit improvements.
+
+## Stop, uninstall or roll back
+
+Turn off **Enable recognition**, or disable Five Pinch in the Extensions app.
+The child reader stops; there is no standalone root daemon or autostart service.
+
+To remove the package:
 
 ```bash
+gnome-extensions disable five-pinch@local.codex
 sudo apt remove five-pinch
 ```
 
-Log out and back in to unload any already-loaded Shell code. Personal gesture
-settings and backups are retained, including on purge. No input group membership
-or root background service is created.
-
-## Compatibility: not every MacBook
-
-The only hardware currently tested end to end is a **2017 MacBook Pro
-with Apple SPI Touchpad**, identity `001c:06cb:0557`. Version 0.4.0 removes
-that vendor/product allowlist experimentally. It accepts other devices only if:
-
-- The exact kernel name is `Apple SPI Touchpad` and the input bus is SPI (`001c`).
-- It is an indirect pointer, not a direct touchscreen.
-- It exposes Linux Protocol B with at least five coordinate slots (up to 64).
-- Both X/Y coordinate ranges are valid and have nonzero physical resolution.
-- Per-contact tracking IDs are available.
-- GNOME Shell 50 is running on Wayland in an active local session.
-
-Vendor/product IDs are retained in `--probe` output to identify test machines.
-No device is declared hardware-validated merely because these checks pass.
-Sensitivity thresholds are unchanged and measured in millimetres, but geometry,
-thumb/palm behaviour, firmware and Linux driver differences still require tests.
-Only one matching touchpad may be present; ambiguous discovery is rejected.
-
-This is **experimental compatibility**, not a claim that every SPI MacBook works.
-Older USB/BCM5974 devices, external Magic Trackpads and non-SPI Apple Silicon/T2
-input paths are not included simply because they are Apple hardware. X11 and
-macOS are not supported.
-
-Different MacBook generations use different input paths; see the kernel
-[Apple SPI driver](https://github.com/torvalds/linux/blob/master/drivers/input/keyboard/applespi.c),
-[BCM5974 documentation](https://www.kernel.org/doc/html/v4.18/input/devices/bcm5974.html),
-and [Asahi support overview](https://asahilinux.org/docs/platform/feature-support/overview/).
-
-For each newly accepted model: record the `--probe` identity and model name;
-perform 20 inward and 20 outward gestures with all fingers lifted between cycles;
-then test ordinary pointing, scrolling, three/four/five-finger swipes, clicks and
-palm contact without pinching. Also test lock/unlock and suspend/resume. Verify
-no unintended desktop actions. Start with **Detect only** and keep a rollback
-package available. These tests have not yet been performed on additional models.
-
-## Device access and lifecycle
-
-The package installs one udev rule in `/usr/lib/udev/rules.d/70-five-pinch.rules`.
-It adds the standard `uaccess` tag only to devices with the exact
-`Apple SPI Touchpad` name, SPI bus, and udev touchpad classification.
-Version 0.4.0 deliberately removes vendor/product filters in both the reader
-and the permission rule; unrelated keyboards, USB and Bluetooth nodes do not match. It does not grant keyboard access, modify groups,
-or make device nodes world-readable. Standard session ACLs can include write
-permission; the recognizer itself opens the input device read-only.
-Rules are reloaded on install/remove. If access is not immediately refreshed,
-log out and back in. Test access on each target system before release.
-
-The GNOME extension supervises a Python child through private stdin/stdout pipes.
-The child does not expose a D-Bus gesture endpoint, create virtual input devices,
-grab the touchpad, log raw coordinates, or run as root. Parent closure, extension
-disablement, or missing heartbeats stops it. Session lock, inactive session,
-sleep and long Shell stalls stop recognition; lift all fingers after resuming.
-
-Typing suppression observes key events delivered to the Shell and has not been
-validated in every application. The recognizer does not reproduce libinput's
-complete palm/thumb/typing filters. Existing three/four-finger gesture handlers
-continue to run and may conflict with contact transitions.
-
-Detection requires five stable tracking IDs, at least 80 ms, 18% median pairwise
-scale change and 3 mm median pairwise distance change; at least 7 of 10 pairs
-must move consistently. It produces at most one event per full hand-contact cycle.
-Click, contact loss/replacement, stale events and dropped input cancel the cycle.
-
-## Build and checks
-
-Build the package without installing it, from the source folder:
+Log out and back in to unload any already-loaded Shell code. Personal settings
+and manual-install backups remain. To go back to the previous package, download
+0.4.0 from Releases:
 
 ```bash
-python3 packaging/build_deb.py --output ../five-pinch_0.4.0_all.deb --staging-parent ../../work/deb-build
+sudo apt install --allow-downgrades ./five-pinch_0.4.0_all.deb
 ```
 
-Build tools: Python 3, `dpkg-deb`, and `glib-compile-schemas`.
-The package is architecture `all` because its files are Python, GJS and data;
-that label does not imply every CPU platform or MacBook is hardware-supported.
+Log out and back in after an upgrade or downgrade. If gestures are interfering,
+disable recognition/the extension first; your ordinary pointing remains handled
+by the system's existing driver.
 
-Checks:
+## Practical failure modes and limits
+
+On untested hardware it may miss gestures, recognize unwanted ones, or interact
+badly with another gesture extension. Since extension code runs inside GNOME
+Shell, bugs can also disrupt the desktop session; there is no zero-risk promise.
+
+Five Pinch does not replace drivers, change firmware, patch libinput, grab the
+touchpad or create virtual input devices. The recognizer opens its device
+read-only and refuses to run as root. A parent pipe and one-second heartbeat
+lease stop it if its supervising extension disappears. Locked/inactive sessions,
+sleep and long Shell stalls suspend recognition. Lift all fingers after resuming.
+Typing suppression is not validated in every application; full libinput-style
+palm/thumb filtering is not implemented. Other three/four-finger handlers remain
+active and can conflict with contact transitions.
+
+The package adds the standard session `uaccess` tag only to udev-classified
+touchpads (`ID_INPUT_TOUCHPAD=1`). This deliberately covers all touchpad brands,
+not keyboards, arbitrary input devices or touchscreens. It does not modify input
+groups or make event nodes world-readable. Standard session ACLs may include write
+access; Five Pinch itself only opens the device read-only. Logout/login refreshes
+access and unloads code after removal.
+
+The reader stores no raw contact history during ordinary use. Only status and
+the latest gesture appear in settings. Diagnostic captures are optional and
+separate; see [development notes](docs/DEVELOPMENT.md).
+
+## Build and test
+
+The source includes the recognizer, extension, diagnostics, Debian packaging,
+setup/migration launcher and tests. The setup and status messages are in English.
 
 ```bash
 PYTHONPATH=reader python3 -m unittest discover -s tests -v
@@ -143,36 +134,32 @@ python3 tests/check_shell_logic.py
 glib-compile-schemas --strict schemas
 desktop-file-validate packaging/five-pinch-settings.desktop
 udevadm verify packaging/70-five-pinch.rules
+python3 packaging/build_deb.py --output ../five-pinch_0.5.0_all.deb --staging-parent ../work/deb-build
 ```
 
-The automated suite contains 37 Python tests, 8 protocol checks and 13 Shell
-logic checks with mocked UI/session objects. Package migration tests verify
-backups, wrong UUID rejection, symlink rejection and disable-failure handling.
-Package archive inspection/extraction is separate from a real apt installation.
-The 0.3.0 Debian installation and live app-grid actions were confirmed on the
-reference MacBook. The 0.4.0 family expansion still needs real tests on other models.
+Python 3, `dpkg-deb`, and `glib-compile-schemas` are needed to build. Debian
+architecture `all` means interpreted code/data, not universal hardware support.
+The builder never installs the package or runs maintainer scripts.
 
-The original detector was exercised on the real touchpad: 18 inward and 17
-outward candidates; a separate short negative run had no candidates despite
-12 five-contact cycles. Live app-grid open/close actions were also confirmed on the reference machine. These are initial results, not a universal reliability guarantee.
+42 Python tests cover geometry, native frames, compatibility/discovery,
+normalized fallback, control leases and setup migration. Eight protocol checks
+and 13 mocked Shell checks cover action dispatch and lifecycle guards. None
+substitutes for community hardware tests.
 
-The source archive also contains the older manual `install.sh` / `uninstall.sh`.
-Use the .deb for a new installation; do not install a second manual copy on top
-of the package. Manual files and Debian-managed files have separate ownership.
-
-MIT license, see LICENSE. Independently written; no Custom Touchpad Gestures
-source code is included.
-
-## Roll back this experiment
-
-Keep the previous `five-pinch_0.3.0_all.deb`. To revert a packaged installation:
+Optional checks with your current user's device access, without sudo:
 
 ```bash
-sudo apt install --allow-downgrades ./five-pinch_0.3.0_all.deb
+python3 -I reader/service.py --probe
+python3 -I reader/service.py --probe --device /dev/input/eventN
+python3 tests/check_native_lifecycle.py
 ```
 
-Log out and back in after either upgrade or downgrade so GNOME loads the
-corresponding code. Your existing gesture action settings are preserved.
-The packaged 0.4.0 reader has passed its probe/lifecycle smoke test on the
-original MacBook; other SPI identities are covered by synthetic capability
-tests only, pending real testers.
+The original reference-device trial generated 18 inward and 17 outward candidates;
+a separate short negative sample generated none despite 12 five-contact cycles.
+The user confirmed working Debian installation and app-grid open/close actions.
+The 0.5.0 discovery and reader lifecycle were checked again on that device.
+Other hardware needs testers, not our permission to try it.
+
+The older manual `install.sh` and `uninstall.sh` remain for source installations.
+Do not put a manual copy on top of a packaged installation unless you deliberately
+want to override it.

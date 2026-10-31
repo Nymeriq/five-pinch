@@ -11,11 +11,14 @@ export default class FivePinchPreferences extends ExtensionPreferences {
         const page = new Adw.PreferencesPage({title: 'Five Pinch', icon_name: 'input-touchpad-symbolic'});
         window.add(page);
         const group = new Adw.PreferencesGroup({title: 'Five-finger pinch',
-            description: 'Experimental Apple SPI family support · GNOME 50 / Wayland. Untested models require validation. Lift all fingers between gestures.'});
+            description: 'GNOME 50 / Wayland. Any touchpad may be tried; tested on MacBook Pro 2017 only. Lift all fingers between gestures.'});
         page.add(group);
         const enable = new Adw.SwitchRow({title: 'Enable recognition'});
         settings.bind('enabled', enable, 'active', Gio.SettingsBindFlags.DEFAULT);
         group.add(enable);
+        const device = new Adw.EntryRow({title: 'Touchpad device (optional; blank = automatic)'});
+        settings.bind('device-path', device, 'text', Gio.SettingsBindFlags.DEFAULT);
+        group.add(device);
         const values = ['disabled', 'diagnostic', 'apps', 'apps-close', 'overview', 'hide'];
         const labels = ['Disabled', 'Detect only (no action)',
             'Open app grid', 'Close app grid',

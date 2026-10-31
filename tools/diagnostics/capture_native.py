@@ -10,43 +10,19 @@ import struct
 import time
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'reader'))
-from detector import Detector, Slots
+from detector import Detector
+from service import Touchpad
 
 
 def capture(path, destination, seconds=45):
-    fd = os.open(path, os.O_RDONLY | os.O_NONBLOCK)
+    pad = Touchpad(path)
+    fd = pad.fd
     try:
-        name = bytearray(256)
-        fcntl.ioctl(fd, 0x81004506, name, True)
-        name = name.split(b'\0')[0].decode()
-        if name != 'Apple SPI Touchpad':
-            raise RuntimeError('Unexpected device')
-        def axis(code):
-            buf = bytearray(24)
-            fcntl.ioctl(fd, 0x80184540 + code, buf, True)
-            return struct.unpack('6i', buf)
-        slot, x, y = axis(47), axis(53), axis(54)
-        if slot[2] - slot[1] + 1 < 5 or min(x[5], y[5]) <= 0:
-            raise RuntimeError('Insufficient slots or resolution')
-        state = Slots(slot[1], slot[2], x[5], y[5])
-        state.slot = slot[0]
-        # Read current per-slot state so startup with fingers down is safe.
-        for code in (57, 53, 54):
-            values = array.array('i', [code] + [0] * (slot[2] + 1))
-            request = 0x8000450a | (len(values) * values.itemsize << 16)
-            fcntl.ioctl(fd, request, values, True)
-            for index in range(slot[1], slot[2] + 1):
-                state.abs(47, index)
-                state.abs(code, values[index + 1])
-        state.slot = slot[0]
+        name, slot, x, y = pad.name, pad.slot, pad.x, pad.y
+        state = pad.state
         detector = Detector()
         ready = False
-        buttons = set()
-        keys = bytearray(96)
-        fcntl.ioctl(fd, 0x80604518, keys, True)
-        for key in (272, 273, 274):
-            if keys[key // 8] & (1 << (key % 8)):
-                buttons.add(key)
+        clicked = bool(pad.buttons)
         event_struct = struct.Struct('@llHHi')
         pending = b''
         maximum = 0
@@ -56,7 +32,7 @@ def capture(path, destination, seconds=45):
         output = Path(destination)
         with output.open('w') as log:
             log.write(json.dumps({'device': name, 'slot_axis': slot,
-                                  'x_axis': x, 'y_axis': y}) + '\n')
+                                  'x_axis': x, 'y_axis': y, 'coordinate_mode': pad.coordinate_mode}) + '\n')
             print(f'MÉRÉS ELINDULT: {seconds:g} másodperc, csak megfigyelés.', flush=True)
             while time.monotonic() - started < seconds:
                 if not select.select([fd], [], [], .25)[0]:
@@ -84,7 +60,7 @@ def capture(path, destination, seconds=45):
                         now = sec + usec / 1e6
                         maximum = max(maximum, len(points))
                         frames += 1
-                        log.write(json.dumps({'time': now, 'points_mm': points,
+                        log.write(json.dumps({'time': now, 'points': points,
                                               'clicked': bool(buttons)}) + '\n')
                         if not ready:
                             ready = not points
@@ -97,7 +73,7 @@ def capture(path, destination, seconds=45):
                        'candidates': candidates, 'recording': str(output)}
             print(json.dumps(summary), flush=True)
     finally:
-        os.close(fd)
+        pad.close()
 
 
 if __name__ == '__main__':

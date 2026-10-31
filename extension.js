@@ -20,7 +20,7 @@ export default class FivePinch extends Extension {
         this._serial = 0;
         this._run = null;
         this._settingsSignal = this._settings.connect('changed', (_s, key) => {
-            if (key === 'enabled' || key === 'pinch-in' || key === 'pinch-out') {
+            if (['enabled', 'pinch-in', 'pinch-out', 'device-path'].includes(key)) {
                 this._stop();
                 this._retryAt = 0;
                 this._tick();
@@ -126,7 +126,8 @@ export default class FivePinch extends Extension {
         this._retryAt = GLib.get_monotonic_time() + 5000000;
         try {
             const process = Gio.Subprocess.new(
-                ['/usr/bin/python3', '-I', `${this.path}/reader/service.py`],
+                ['/usr/bin/python3', '-I', `${this.path}/reader/service.py`,
+                    ...(this._settings.get_string('device-path') ? ['--device', this._settings.get_string('device-path')] : [])],
                 Gio.SubprocessFlags.STDIN_PIPE | Gio.SubprocessFlags.STDOUT_PIPE);
             const run = {process, input: process.get_stdin_pipe(),
                 output: new Gio.DataInputStream({base_stream: process.get_stdout_pipe()}),

@@ -22,8 +22,10 @@ if [[ -e $dest ]]; then
     echo "Already installed: $dest. Remove the previous manual Five Pinch installation first." >&2
     exit 1
 fi
-# Check the current user can read the exact supported touchpad. No access changes.
-/usr/bin/python3 -I "$source_dir/reader/service.py" --probe
+# A missing/unready touchpad must not prevent installation on another machine.
+if ! /usr/bin/python3 -I "$source_dir/reader/service.py" --probe; then
+    echo 'Touchpad not ready yet; installation will continue. Check Settings after installation.'
+fi
 glib-compile-schemas --strict "$source_dir/schemas"
 mkdir -p -- "$(dirname -- "$dest")"
 stage=$(mktemp -d "$(dirname -- "$dest")/.five-pinch-stage.XXXXXX")

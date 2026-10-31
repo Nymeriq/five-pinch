@@ -9,7 +9,7 @@ import shutil
 import subprocess
 import tempfile
 
-VERSION = '0.4.0'
+VERSION = '0.5.0'
 UUID = 'five-pinch@local.codex'
 SOURCE = Path(__file__).resolve().parents[1]
 
@@ -43,8 +43,8 @@ def build(output, staging_parent):
         (doc / 'copyright').write_text('Five Pinch\nCopyright (c) 2026 Five Pinch contributors\n\n' +
                                         (SOURCE / 'LICENSE').read_text())
         with gzip.GzipFile(filename=str(doc / 'changelog.gz'), mode='wb', mtime=0) as file:
-            file.write(b'five-pinch (0.4.0) experimental; urgency=low\n\n'
-                       b'  * Experimental Apple SPI family support with multitouch capability checks.\n\n'
+            file.write(b'five-pinch (0.5.0) experimental; urgency=low\n\n'
+                       b'  * Open touchpad discovery, optional device selection and normalized coordinates.\n\n'
                        b' -- Five Pinch contributors  Fri, 30 Oct 2026 18:00:00 +0100\n')
         control = root / 'DEBIAN'
         control.mkdir()
@@ -59,7 +59,7 @@ Installed-Size: {size}
 Depends: gnome-shell (>= 50), gnome-shell (<< 51), python3 (>= 3.10), python3-gi, gir1.2-adw-1, libglib2.0-bin, dconf-gsettings-backend | gsettings-backend, udev
 Description: Experimental five-finger pinch gestures for GNOME 50
  English settings, app-grid and overview actions, and a supervised read-only
- touchpad recognizer. Experimentally accepts Apple SPI Touchpads after capability checks.
+ touchpad recognizer. Any udev-classified touchpad can be tried, regardless of brand or bus.
  Requires GNOME 50 on Wayland and at least five coordinate slots.
 ''')
         for name in ['postinst', 'postrm']:

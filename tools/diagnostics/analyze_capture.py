@@ -20,7 +20,7 @@ def analyze(path):
     latencies = []
     baseline_time = None
     for row in rows[1:]:
-        points = {int(k): tuple(v) for k, v in row['points_mm'].items()}
+        points = {int(k): tuple(v) for k, v in row.get('points', row.get('points_mm', {})).items()}
         counts[len(points)] += 1
         if points:
             if not active:

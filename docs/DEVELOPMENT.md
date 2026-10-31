@@ -24,8 +24,9 @@ markers and no clear license declaration, so it was not used as the code base.
 5. Independent app-grid open/close and overview open/close actions.
 6. English settings, Debian packaging, and backup-based manual-install migration.
 7. Experimental Apple SPI family acceptance using device capability checks.
+8. Open discovery for all udev-classified touchpads, with normalized-coordinate fallback and optional device selection.
 
-The current reference device exposes 11 coordinate slots and X/Y resolutions
+The reference device exposes 11 coordinate slots and X/Y resolutions
 of 96/94 units per millimetre. The first positive capture generated 18 inward
 and 17 outward candidates. A separate short negative capture generated no
 candidates despite 12 cycles reaching five contacts. These samples establish
@@ -36,8 +37,8 @@ open/close actions work. Other SPI models still require independent tests.
 
 ## Diagnostics
 
-`tools/diagnostics/capture_native.py` reads one explicitly selected Apple SPI
-Touchpad for a bounded interval. It prints candidates and writes coordinate
+`tools/diagnostics/capture_native.py` reads one explicitly selected Linux
+touchpad for a bounded interval. It prints candidates and writes coordinate
 frames for offline analysis. It does not perform desktop actions or install
 anything. Unlike the normal reader, it deliberately records raw touch geometry.
 
@@ -57,7 +58,7 @@ Original local recordings and backups are not part of this public repository.
 
 ## Limits still to test
 
-- Additional Apple SPI models, firmware variants and hand geometries.
+- Additional touchpad models, transports, firmware variants and hand geometries.
 - Extended ordinary use, palm/thumb contacts and typing in different applications.
 - Sleep, session switching, lock/unlock and recovery after input loss.
 - Interaction with GNOME's built-in three/four-finger gestures and other extensions.
