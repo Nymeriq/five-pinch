@@ -2,7 +2,7 @@
 
 Experimental five-finger pinch gestures for Apple SPI touchpads on GNOME 50 / Wayland.
 
-[Download the Debian package](https://github.com/FarkasRabai/five-pinch/releases/latest) · [MIT license](LICENSE)
+[Download the Debian package](https://github.com/Nymeriq/five-pinch/releases/latest) · [MIT license](LICENSE)
 
 The settings UI, action names, status messages and setup application are in English.
 
