@@ -16,9 +16,14 @@ export default class FivePinchPreferences extends ExtensionPreferences {
         const enable = new Adw.SwitchRow({title: 'Enable recognition'});
         settings.bind('enabled', enable, 'active', Gio.SettingsBindFlags.DEFAULT);
         group.add(enable);
-        const device = new Adw.EntryRow({title: 'Touchpad device (optional; blank = automatic)'});
+        const device = new Adw.EntryRow({title: 'Touchpad device path (optional)'});
+        device.get_delegate().set_placeholder_text('/dev/input/event7');
+        device.set_tooltip_text('Full device path, for example /dev/input/event7. Leave blank for automatic selection.');
         settings.bind('device-path', device, 'text', Gio.SettingsBindFlags.DEFAULT);
         group.add(device);
+        group.add(new Adw.ActionRow({title: 'Choosing a touchpad',
+            subtitle: 'Leave blank for automatic selection, or enter a full path such as /dev/input/event7. Find it with: sudo libinput list-devices (Kernel path). The event number may change after reconnecting or restarting.',
+            subtitle_selectable: true}));
         const values = ['disabled', 'diagnostic', 'apps', 'apps-close', 'overview', 'hide'];
         const labels = ['Disabled', 'Detect only (no action)',
             'Open app grid', 'Close app grid',

@@ -25,7 +25,7 @@ Alternatively, install a standalone release file:
 Download the `.deb` from Releases and, from that folder, run:
 
 ```bash
-sudo apt install ./five-pinch_0.5.0_all.deb
+sudo apt install ./five-pinch_0.5.1_all.deb
 ```
 
 Open **Five Pinch Settings**. Log out and back in if GNOME has not discovered
@@ -41,10 +41,29 @@ and lift all fingers between gestures. If detection works, try:
 **Close app grid** closes a selected app grid to the desktop; it does not close
 an ordinary window overview. **Close overview** is a separate action.
 
+### Choosing a touchpad manually
+
 With multiple touchpads, automatic mode picks the first usable event device.
-The optional **Touchpad device** field accepts `/dev/input/eventN` to choose
-another one. Leave it blank for automatic selection. Event numbers can change
-on reconnect/reboot, so clear or update a manual override if necessary.
+Leave **Touchpad device path** blank to keep this automatic selection.
+To select a particular touchpad, enter its **full Linux input device path**,
+for example `/dev/input/event7`. The placeholder is an example only.
+A device name, a USB/vendor/product ID, or just `event7` is not accepted.
+
+To find the path, run:
+
+```bash
+sudo libinput list-devices
+```
+
+If the command is missing, install Ubuntu's `libinput-tools` package.
+Find your touchpad's **Device** section and copy the path from **Kernel**
+(shown as **Device node** by some tools), for example `/dev/input/event7`.
+Do not copy a keyboard or mouse entry. The **Recognizer** status in Five Pinch
+Settings reports whether the selected touchpad can be opened and used.
+
+The override takes effect while recognition is enabled. Event numbers can change
+on reconnect/reboot; if recognition stops working, clear the field to return to
+automatic selection or find and enter the new path.
 
 ### Previous manual installations
 
@@ -144,7 +163,7 @@ python3 tests/check_shell_logic.py
 glib-compile-schemas --strict schemas
 desktop-file-validate packaging/five-pinch-settings.desktop
 udevadm verify packaging/70-five-pinch.rules
-python3 packaging/build_deb.py --output ../five-pinch_0.5.0_all.deb --staging-parent ../work/deb-build
+python3 packaging/build_deb.py --output ../five-pinch_0.5.1_all.deb --staging-parent ../work/deb-build
 ```
 
 Python 3, `dpkg-deb`, and `glib-compile-schemas` are needed to build. Debian
