@@ -12,6 +12,16 @@ please send a code PR too. No claim of universal compatibility is implied.
 
 ## Install
 
+For named installation and normal `apt upgrade` updates, use the one-time
+[signed APT repository setup](docs/APT.md). Afterwards:
+
+```bash
+sudo apt update
+sudo apt install five-pinch
+```
+
+Alternatively, install a standalone release file:
+
 Download the `.deb` from Releases and, from that folder, run:
 
 ```bash
