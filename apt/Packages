@@ -1,0 +1,36 @@
+Package: five-pinch
+Version: 0.4.0
+Architecture: all
+Maintainer: Five Pinch contributors
+Installed-Size: 45
+Depends: gnome-shell (>= 50), gnome-shell (<< 51), python3 (>= 3.10), python3-gi, gir1.2-adw-1, libglib2.0-bin, dconf-gsettings-backend | gsettings-backend, udev
+Filename: pool/five-pinch_0.4.0_all.deb
+Size: 16284
+MD5sum: 60ffd1ea859db1cfabaa3c23e3269608
+SHA1: 93965eaf2f1c4357cef24863fa96d0d016f13d58
+SHA256: fa68a9f574a27a98125dc5521be9f6b049417761804ea4566cc5c6837bde57ac
+Section: gnome
+Priority: optional
+Description: Experimental five-finger pinch gestures for GNOME 50
+ English settings, app-grid and overview actions, and a supervised read-only
+ touchpad recognizer. Experimentally accepts Apple SPI Touchpads after capability checks.
+ Requires GNOME 50 on Wayland and at least five coordinate slots.
+
+Package: five-pinch
+Version: 0.5.0
+Architecture: all
+Maintainer: Five Pinch contributors
+Installed-Size: 46
+Depends: gnome-shell (>= 50), gnome-shell (<< 51), python3 (>= 3.10), python3-gi, gir1.2-adw-1, libglib2.0-bin, dconf-gsettings-backend | gsettings-backend, udev
+Filename: pool/five-pinch_0.5.0_all.deb
+Size: 16636
+MD5sum: 3a5a34ec9025e26d09eb7b36b6d78dba
+SHA1: ea3f594b5750b85a964f5e3cd0798cf78c7066bf
+SHA256: 81691d48e6a8ff2b4522d7d5ef87ad7d8627cc9c4014739cdec9e645b0304731
+Section: gnome
+Priority: optional
+Description: Experimental five-finger pinch gestures for GNOME 50
+ English settings, app-grid and overview actions, and a supervised read-only
+ touchpad recognizer. Any udev-classified touchpad can be tried, regardless of brand or bus.
+ Requires GNOME 50 on Wayland and at least five coordinate slots.
+
