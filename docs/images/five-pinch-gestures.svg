@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="590" viewBox="0 0 1200 590" role="img" aria-labelledby="title desc">
+<title id="title">Five Pinch: your apps, a gesture away</title>
+<desc id="desc">Gesture illustration, not a screenshot. Five contacts move inward to open the application grid, and outward to close it.</desc>
+<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#101b30"/><stop offset="1" stop-color="#182e40"/></linearGradient><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 1 1 L 8 5 L 1 9" fill="none" stroke="#69e3c2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<rect width="1200" height="590" rx="24" fill="url(#bg)"/>
+<g font-family="DejaVu Sans, Arial, sans-serif"><text x="54" y="64" fill="#69e3c2" font-size="19" font-weight="bold" letter-spacing="3">FIVE PINCH</text><text x="54" y="113" fill="#f3f7ff" font-size="36" font-weight="bold">Your apps, a gesture away.</text><text x="54" y="148" fill="#b5c5db" font-size="18">Five-finger gestures for MacBooks and other Linux laptops.</text>
+<rect x="54" y="184" width="526" height="323" rx="20" fill="#15243a" stroke="#35475d"/>
+<rect x="81" y="211" width="232" height="219" rx="20" fill="#1c3048" stroke="#51677f"/>
+<circle cx="197.0" cy="252.0" r="9" fill="#a9bcd2"/><path d="M 197.0 264.0 L 197.0 294.0" stroke="#69e3c2" stroke-width="3" marker-end="url(#arrow)"/>
+<circle cx="270.2" cy="305.2" r="9" fill="#a9bcd2"/><path d="M 258.8 308.9 L 230.3 318.2" stroke="#69e3c2" stroke-width="3" marker-end="url(#arrow)"/>
+<circle cx="242.3" cy="391.3" r="9" fill="#a9bcd2"/><path d="M 235.2 381.6 L 217.6 357.3" stroke="#69e3c2" stroke-width="3" marker-end="url(#arrow)"/>
+<circle cx="151.7" cy="391.3" r="9" fill="#a9bcd2"/><path d="M 158.8 381.6 L 176.4 357.3" stroke="#69e3c2" stroke-width="3" marker-end="url(#arrow)"/>
+<circle cx="123.8" cy="305.2" r="9" fill="#a9bcd2"/><path d="M 135.2 308.9 L 163.7 318.2" stroke="#69e3c2" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="334" y="248" font-size="13" letter-spacing="2" fill="#69e3c2">PINCH IN</text>
+<text x="334" y="284" fill="#f3f7ff" font-size="24" font-weight="bold">Open your apps</text>
+<rect x="334" y="307" width="218" height="120" rx="10" fill="#0d192b" stroke="#40546b"/>
+<rect x="369" y="324" width="29" height="29" rx="7" fill="#69e3c2"/>
+<rect x="424" y="324" width="29" height="29" rx="7" fill="#9da9ff"/>
+<rect x="479" y="324" width="29" height="29" rx="7" fill="#f5bf7e"/>
+<rect x="369" y="372" width="29" height="29" rx="7" fill="#69e3c2"/>
+<rect x="424" y="372" width="29" height="29" rx="7" fill="#9da9ff"/>
+<rect x="479" y="372" width="29" height="29" rx="7" fill="#f5bf7e"/>
+<text x="81" y="477" fill="#b5c5db" font-size="16">Bring five fingertips together.</text>
+<rect x="620" y="184" width="526" height="323" rx="20" fill="#15243a" stroke="#35475d"/>
+<rect x="647" y="211" width="232" height="219" rx="20" fill="#1c3048" stroke="#51677f"/>
+<circle cx="763.0" cy="294.0" r="9" fill="#a9bcd2"/><path d="M 763.0 282.0 L 763.0 252.0" stroke="#69e3c2" stroke-width="3" marker-end="url(#arrow)"/>
+<circle cx="796.3" cy="318.2" r="9" fill="#a9bcd2"/><path d="M 807.7 314.5 L 836.2 305.2" stroke="#69e3c2" stroke-width="3" marker-end="url(#arrow)"/>
+<circle cx="783.6" cy="357.3" r="9" fill="#a9bcd2"/><path d="M 790.6 367.0 L 808.3 391.3" stroke="#69e3c2" stroke-width="3" marker-end="url(#arrow)"/>
+<circle cx="742.4" cy="357.3" r="9" fill="#a9bcd2"/><path d="M 735.4 367.0 L 717.7 391.3" stroke="#69e3c2" stroke-width="3" marker-end="url(#arrow)"/>
+<circle cx="729.7" cy="318.2" r="9" fill="#a9bcd2"/><path d="M 718.3 314.5 L 689.8 305.2" stroke="#69e3c2" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="900" y="248" font-size="13" letter-spacing="2" fill="#69e3c2">SPREAD OUT</text>
+<text x="900" y="284" fill="#f3f7ff" font-size="24" font-weight="bold">Back to desktop</text>
+<rect x="900" y="307" width="218" height="120" rx="10" fill="#0d192b" stroke="#40546b"/>
+<path d="M 910 416 L 981 327 L 1030 389 L 1065 350 L 1108 416 Z" fill="#254967"/><rect x="976" y="411" width="70" height="6" rx="3" fill="#69e3c2"/>
+<text x="647" y="477" fill="#b5c5db" font-size="16">Move five fingertips apart.</text>
+<text x="54" y="552" fill="#b5c5db" font-size="15">GNOME 50 / Wayland  ·  Choose your own actions in settings</text><text x="1146" y="552" text-anchor="end" fill="#90a6be" font-size="13">Gesture illustration</text></g></svg>
