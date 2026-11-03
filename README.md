@@ -27,6 +27,10 @@ Apple SPI touchpad; other hardware may work, but has not been verified yet.
 - This is a **Linux extension**, not a macOS app. Other desktops and GNOME versions
   are not supported by the current release.
 
+**No separate Extension Manager app is required.** Open **Five Pinch Settings**
+directly. The Debian package declares its GNOME dependencies; APT installs any
+missing required packages automatically. Extension Manager is optional.
+
 Not sure about your touchpad? You can install it and check the status in settings.
 Five Pinch is experimental: detection may need work on your hardware, and other
 gesture extensions can interfere. You can turn it off or uninstall it at any time.
@@ -64,7 +68,7 @@ Use the filename you downloaded. This option does not add the update repository.
 2. Click **Enable** if prompted. Active installations open settings directly.
 3. Leave **Advanced → Touchpad** empty to select your touchpad automatically.
 4. Set both **Pinch in** and **Pinch out** to **Detect only**,
-   then switch on **Enable recognition**.
+   then switch on **Enable gestures**.
 5. Place five fingers on the touchpad and pinch inward or spread outward.
    **Lift all fingers between gestures.** Check **Diagnostics → Last gesture**.
 
@@ -128,7 +132,7 @@ nothing happens until you configure them.
 - **No gesture is detected:** check **Diagnostics → Recognizer**. Keep the device
   field empty first; if you have multiple touchpads, see
   [how to choose your touchpad](docs/TECHNICAL.md#choosing-a-touchpad-manually).
-- **Gestures behave unexpectedly:** turn off **Enable recognition** and check
+- **Gestures behave unexpectedly:** turn off **Enable gestures** and check
   whether another gesture extension is active.
 - **Previously installed from source:** the settings launcher can offer
   **Use packaged version**. It backs up the old manual copy; log out and back
@@ -147,7 +151,7 @@ sudo apt install --only-upgrade five-pinch
 **Log out and back in after updating**, so GNOME loads the new code.
 Your gesture settings are preserved.
 
-To stop it, turn off **Enable recognition** in settings or disable **Five Pinch**
+To stop it, turn off **Enable gestures** in settings or disable **Five Pinch**
 in the Extensions app. To uninstall:
 
 ```bash
