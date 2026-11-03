@@ -116,6 +116,7 @@ class Touchpad:
     def __init__(self, path):
         self.path = os.path.realpath(path)
         self.tail_pending = False
+        self.cycle_active = False
         self.fd = os.open(path, os.O_RDONLY | os.O_NONBLOCK | os.O_CLOEXEC)
         try:
             name = bytearray(256)
@@ -201,9 +202,16 @@ class Touchpad:
                 if not points and getattr(self, 'tail_pending', False):
                     self.tail_pending = False
                     results.append({'event': 'pinch-released', 'time': now})
+                if not points:
+                    self.cycle_active = False
                 if not self.ready:
                     self.ready = not points and not self.buttons
                     continue
+                if points and not getattr(self, 'cycle_active', False):
+                    self.cycle_active = True
+                    results.append({'event': 'contact-begin', 'time': now})
+                elif not points:
+                    self.cycle_active = False
                 if len(points) == 5 and not getattr(self, 'tail_pending', False):
                     self.tail_pending = True
                     results.append({'event': 'five-contact', 'time': now})
@@ -247,7 +255,7 @@ def run(device_path=None, sensitivity='balanced'):
                 try:
                     for candidate in touchpad.read():
                         sequence += 1
-                        message = {'type': {'pinch-released': 'pinch-end', 'five-contact': 'five-contact'}.get(candidate['event'], 'pinch'),
+                        message = {'type': {'pinch-released': 'pinch-end', 'five-contact': 'five-contact', 'contact-begin': 'contact-begin'}.get(candidate['event'], 'pinch'),
                                    'device': touchpad.path, 'sequence': sequence,
                                    'monotonic_us': int(candidate['time'] * 1000000)}
                         if message['type'] == 'pinch':

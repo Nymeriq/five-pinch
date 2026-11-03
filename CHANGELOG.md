@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.6.6 — local test build
+
+- Add optional, enabled-by-default rinertia scrolling protection. Detect the
+  actual `rinertia Virtual Device` event source; no service control is used.
+- Block that virtual device's scrolls during a five-contact cycle and its
+  momentum tail. A new physical contact cycle immediately clears the old guard.
+- End the tail after a 120 ms scroll-free gap, at most two seconds after hand lift;
+  an unreleased cycle expires after three seconds.
+- Other pointer devices, standalone <=4-contact cycles, and the three recognition
+  profiles remain unchanged. Scheduler races and other virtual device names still
+  require live testing; this is not a universal conflict guarantee.
+- Keep a settings toggle, prior packages and diagnostic recordings for rollback.
+
+## 0.6.5 — diagnostic test build
+
+- Still no recognition/filter changes.
+- Trace workspace activation stacks, overview transitions and action boundaries.
+- Observe scroll/button events and overview-group delivery as well as stage swipes.
+- Refresh read-only tracker observers when tracing starts and report which exist.
+- Capture 02 confirmed a workspace change without any observed native stage swipe;
+  a swipe cause remains unproven. Detailed findings saved alongside the private log.
+
+## 0.6.4 — diagnostic test build
+
+- No recognition or swipe-filter behavior changes.
+- Opt-in journal trace records each captured swipe phase and its filter decision,
+  reader lifecycle messages, native tracker signals and workspace changes.
+- Tracker hooks observe only; no tracker state is changed. Logging is off by default.
+- Extend the session recorder with opt-in Shell tracing and restore the previous
+  logging setting when recording ends. Existing source capture remains available.
+
 ## 0.6.3 — local test build
 
 - Arm pinch-tail protection at five simultaneous contacts, before the pinch

@@ -9,7 +9,7 @@ import shutil
 import subprocess
 import tempfile
 
-VERSION = '0.6.3'
+VERSION = '0.6.6'
 UUID = 'five-pinch@local.codex'
 SOURCE = Path(__file__).resolve().parents[1]
 
@@ -20,7 +20,7 @@ def build(output, staging_parent):
         root = Path(tmp)
         extension = root / 'usr/share/gnome-shell/extensions' / UUID
         extension.mkdir(parents=True)
-        for name in ['metadata.json', 'extension.js', 'prefs.js', 'protocol.js', 'pinchTailGuard.js', 'LICENSE']:
+        for name in ['metadata.json', 'extension.js', 'prefs.js', 'protocol.js', 'pinchTailGuard.js', 'rinertiaGuard.js', 'LICENSE']:
             shutil.copyfile(SOURCE / name, extension / name)
         (extension / 'reader').mkdir()
         for name in ['service.py', 'detector.py']:
@@ -45,8 +45,8 @@ def build(output, staging_parent):
         (doc / 'copyright').write_text('Five Pinch\nCopyright (c) 2026 Five Pinch contributors\n\n' +
                                         (SOURCE / 'LICENSE').read_text())
         with gzip.GzipFile(filename=str(doc / 'changelog.gz'), mode='wb', mtime=0) as file:
-            file.write(b'five-pinch (0.6.3) experimental; urgency=low\n\n'
-                       b'  * Add a reversible, five-contact-cycle protection against pinch-tail swipes.\n\n'
+            file.write(b'five-pinch (0.6.6) experimental; urgency=low\n\n'
+                       b'  * Add scoped rinertia scrolling protection during five-contact interactions.\n\n'
                        b' -- Five Pinch contributors  Tue, 03 Nov 2026 12:00:00 +0100\n')
         control = root / 'DEBIAN'
         control.mkdir()

@@ -3,6 +3,8 @@
   <schema id="org.gnome.shell.extensions.five-pinch" path="/org/gnome/shell/extensions/five-pinch/">
     <key name="protect-pinch-tail" type="b"><default>true</default><summary>Suppress new swipe sequences only in the tail of a five-contact cycle</summary></key>
     <key name="tail-status" type="s"><default>'Waiting for five-finger contact.'</default><summary>Latest pinch-tail protection decision, without coordinates</summary></key>
+    <key name="diagnostic-logging" type="b"><default>false</default><summary>Opt-in gesture phase and Shell tracker logging; no keyboard data</summary></key>
+    <key name="protect-rinertia" type="b"><default>true</default><summary>Filter rinertia virtual scrolling only during a five-contact interaction and its momentum tail</summary></key>
     <key name="sensitivity" type="s"><choices><choice value="original"/><choice value="balanced"/><choice value="relaxed"/></choices><default>'balanced'</default><summary>Recognition sensitivity; original restores the 0.5.1 thresholds</summary></key>
     <key name="device-path" type="s"><default>''</default><summary>Optional touchpad event device path; empty selects automatically</summary></key>
     <key name="enabled" type="b"><default>false</default><summary>Enable recognition</summary></key>

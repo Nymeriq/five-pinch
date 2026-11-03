@@ -126,7 +126,7 @@ python3 tests/check_shell_logic.py
 glib-compile-schemas --strict schemas
 desktop-file-validate packaging/five-pinch-settings.desktop
 udevadm verify packaging/70-five-pinch.rules
-python3 packaging/build_deb.py --output ../five-pinch_0.6.3_all.deb --staging-parent ../work/deb-build
+python3 packaging/build_deb.py --output ../five-pinch_0.6.6_all.deb --staging-parent ../work/deb-build
 ```
 
 Python 3, `dpkg-deb`, and `glib-compile-schemas` are needed to build. Debian
@@ -195,3 +195,32 @@ arm it. At least one configured desktop action is required. `Protect pinch endin
 
 Run `gjs -m tests/pinch_tail_test.js` for state and timestamp checks. These do
 not prove ordering against a live compositor; hardware/user feedback is needed.
+
+## rinertia integration (experimental)
+
+The reference-device diagnostic capture confirmed a scroll-driven workspace
+change, via `overview._onScrollEvent` → `workspacesView._onScrollEvent` →
+`windowManager.handleWorkspaceScroll`. The source was the virtual mouse named
+`rinertia Virtual Device`, distinct from the physical touchpad. A native swipe
+filter alone cannot intercept that scroll path.
+
+The separate `protect-rinertia` switch filters only SCROLL events with this
+runtime source name, after five physical contacts on the supervised touchpad.
+No service discovery, root access, process suspension, external-device input
+reader or rinertia configuration modification is required. An installed but
+inactive rinertia has no effect. A renamed virtual device is not matched.
+
+The physical reader reports contact-cycle start, five contacts and full hand
+lift with monotonic timestamps. New contact-cycle start clears prior momentum
+protection, including for one/two/three/four-contact gestures. At hand lift, a
+bounded momentum phase begins: a 120 ms gap ends it, with a hard maximum of two
+seconds. The active contact phase has a three-second watchdog. Lock, disable,
+reader restart, typing pause or uninstall clears the guard. Another physical
+mouse is never filtered. Multiple physical touchpads feeding the same virtual
+rinertia pointer cannot be perfectly attributed; IPC timing can also affect
+edge cases. Live hardware testing remains necessary.
+
+Run `gjs -m tests/rinertia_guard_test.js` for scope, expiry, new-cycle and recorded
+failure-timing regression checks. Diagnostic traces are opt-in and turned off by
+default. The session recorder restores its previous logging setting when stopped
+normally; no raw logs are published with the source.

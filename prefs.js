@@ -20,6 +20,10 @@ export default class FivePinchPreferences extends ExtensionPreferences {
             subtitle: 'Experimental: suppress a new three/four-finger swipe in the ending of an interaction that reached five contacts. Independent gestures stay unchanged.'});
         settings.bind('protect-pinch-tail', tail, 'active', Gio.SettingsBindFlags.DEFAULT);
         group.add(tail);
+        const rinertia = new Adw.SwitchRow({title: 'Protect against rinertia scrolling',
+            subtitle: 'Automatically filters rinertia Virtual Device scrolling during five-finger interactions and their momentum tail. New independent gestures restore scrolling. Does not stop rinertia.'});
+        settings.bind('protect-rinertia', rinertia, 'active', Gio.SettingsBindFlags.DEFAULT);
+        group.add(rinertia);
         const profiles = ['original', 'balanced', 'relaxed'];
         const sensitivity = new Adw.ComboRow({title: 'Gesture sensitivity',
             subtitle: 'Balanced needs less movement. Relaxed is more sensitive. Original restores the previous feel.',

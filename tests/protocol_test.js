@@ -25,3 +25,6 @@ assert(validContactState({...end, type: 'five-contact'}, now, 1));
 assert(!validContactState({...end, type: 'other-contact'}, now, 1));
 assert(!validContactState({...end, type: 'five-contact', device: null}, now, 1));
 print('3 five-contact protocol checks passed');
+
+assert(validContactState({...end, type: 'contact-begin'}, now, 1));
+print('Contact-cycle protocol check passed');

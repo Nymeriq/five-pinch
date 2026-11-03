@@ -48,7 +48,7 @@ The setup requires `curl` and `gpg`. If either is missing, install them with
 [What does the repository setup change?](docs/APT.md)
 
 Prefer a standalone installer? [Download the latest `.deb`](https://github.com/Nymeriq/five-pinch/releases/latest),
-open Terminal in your Downloads folder, and run `sudo apt install ./five-pinch_0.6.3_all.deb`.
+open Terminal in your Downloads folder, and run `sudo apt install ./five-pinch_0.6.6_all.deb`.
 Use the filename you downloaded. This option does not add the update repository.
 
 > [!IMPORTANT]
@@ -91,6 +91,18 @@ Turn it off to restore the earlier behavior. It cannot cancel a native swipe
 that was already underway before the five-contact notification reached GNOME. Live testing of this
 revised protection is still pending. The settings show its latest decision under
 **Pinch ending protection**, without recording finger coordinates.
+
+### Using rinertia for smooth scrolling?
+
+**Protect against rinertia scrolling** automatically recognizes events from the
+`rinertia Virtual Device` and filters its scrolling during five-finger
+interactions and their short momentum tail. This prevents leftover scrolling
+from being interpreted as workspace navigation while the app grid is closing.
+
+It does not stop or reconfigure rinertia. A new physical touchpad contact cycle
+restores scrolling immediately, and ordinary <=4-contact interactions do not
+activate the guard. Other mice are unaffected. Switch the option off to restore
+the earlier behavior. This integration is experimental and needs live testing.
 
 ### 3. Choose what your gestures do
 

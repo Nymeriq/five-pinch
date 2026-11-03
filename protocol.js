@@ -9,7 +9,7 @@ export function validCandidate(m, now, lastSequence) {
 
 export function validContactState(m, now, lastSequence) {
     return m !== null && typeof m === 'object' &&
-        (m.type === 'five-contact' || m.type === 'pinch-end') &&
+        (m.type === 'five-contact' || m.type === 'pinch-end' || m.type === 'contact-begin') &&
         typeof m.device === 'string' && /^\/dev\/input\/event[0-9]+$/.test(m.device) &&
         Number.isSafeInteger(m.sequence) && m.sequence > lastSequence &&
         Number.isSafeInteger(m.monotonic_us) &&

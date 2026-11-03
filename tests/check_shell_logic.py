@@ -14,6 +14,7 @@ with tempfile.TemporaryDirectory(prefix='five-pinch-gjs-') as name:
     source = source.replace("'resource:///org/gnome/shell/ui/main.js'", "'./main.js'")
     source = source.replace("import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';", "class Extension {}")
     (target / 'extension.js').write_text(source)
+    (target / 'rinertiaGuard.js').write_text((root / 'rinertiaGuard.js').read_text())
     (target / 'pinchTailGuard.js').write_text((root / 'pinchTailGuard.js').read_text())
     (target / 'protocol.js').write_text((root / 'protocol.js').read_text())
     (target / 'main.js').write_text('''
@@ -26,6 +27,7 @@ export const overview = {dash: {showAppsButton: {checked: false}}, showApps() {a
 import GLib from 'gi://GLib';
 import FivePinch from './extension.js';
 import {PinchTailGuard} from './pinchTailGuard.js';
+import {RinertiaGuard} from './rinertiaGuard.js';
 import * as Main from './main.js';
 let checks = 0;
 function check(value) { checks++; if (!value) throw new Error(`Check ${checks} failed`); }
@@ -107,6 +109,20 @@ extension._message(run, {type: 'pinch-end', sequence: 10, device: node, monotoni
 check(extension._tailGuard.pinch.released === stamp);
 values['protect-pinch-tail'] = false;
 check(extension._handleSwipe(swipe(1, 4)) === 0);
+extension._rinertiaGuard = new RinertiaGuard();
+values['protect-rinertia'] = true;
+const scroll = deviceName => ({get_source_device() {return {
+    get_device_name() {return deviceName;}, get_device_node() {return '/dev/input/event12';}};},
+    get_time() {return Math.floor(GLib.get_monotonic_time() / 1000) >>> 0;}});
+check(extension._handleScroll(scroll('rinertia Virtual Device')) === 0);
+extension._message(run, {type: 'five-contact', sequence: 11, device: node, monotonic_us: stamp});
+check(extension._handleScroll(scroll('rinertia Virtual Device')) === 1);
+check(extension._handleScroll(scroll('External Mouse')) === 0);
+values['protect-rinertia'] = false;
+check(extension._handleScroll(scroll('rinertia Virtual Device')) === 0);
+values['protect-rinertia'] = true;
+extension._message(run, {type: 'contact-begin', sequence: 12, device: node, monotonic_us: GLib.get_monotonic_time()});
+check(extension._handleScroll(scroll('rinertia Virtual Device')) === 0);
 let killed = 0, cancelled = 0;
 const pipe = {close_async(_p, _c, callback) {callback(this, {});}, close_finish() {}};
 extension._run = {cancel: {cancel() {cancelled++;}},

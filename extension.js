@@ -4,6 +4,7 @@ import GLib from 'gi://GLib';
 import Clutter from 'gi://Clutter';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+import {RinertiaGuard} from './rinertiaGuard.js';
 import {PinchTailGuard} from './pinchTailGuard.js';
 import {validCandidate, validContactState} from './protocol.js';
 
@@ -11,7 +12,10 @@ export default class FivePinch extends Extension {
     enable() {
         this._alive = true;
         this._tailGuard = new PinchTailGuard();
+        this._rinertiaGuard = new RinertiaGuard();
         this._settings = this.getSettings();
+        this._diagnosticHooks = [];
+        this._initDiagnostics();
         this._cancel = new Gio.Cancellable();
         this._session = null;
         this._sleeping = false;
@@ -22,7 +26,14 @@ export default class FivePinch extends Extension {
         this._serial = 0;
         this._run = null;
         this._settingsSignal = this._settings.connect('changed', (_s, key) => {
-            if (['enabled', 'pinch-in', 'pinch-out', 'device-path', 'sensitivity', 'protect-pinch-tail'].includes(key)) {
+            if (key === 'diagnostic-logging' && this._settings.get_boolean(key)) {
+                for (const [object, id] of this._diagnosticHooks) {
+                    try { object.disconnect(id); } catch (_) { /* Replaced observer target. */ }
+                }
+                this._diagnosticHooks = [];
+                this._initDiagnostics();
+            }
+            if (['enabled', 'pinch-in', 'pinch-out', 'device-path', 'sensitivity', 'protect-pinch-tail', 'protect-rinertia'].includes(key)) {
                 this._stop();
                 this._retryAt = 0;
                 this._tick();
@@ -35,6 +46,9 @@ export default class FivePinch extends Extension {
                 this._pauseUntil = GLib.get_monotonic_time() + 900000;
                 this._stop();
             }
+            this._tracePointer(event, 'stage-capture');
+            if (event.type() === Clutter.EventType.SCROLL)
+                return this._handleScroll(event);
             if (event.type() === Clutter.EventType.TOUCHPAD_SWIPE)
                 return this._handleSwipe(event);
             return Clutter.EVENT_PROPAGATE;
@@ -56,9 +70,102 @@ export default class FivePinch extends Extension {
         this._initSession();
     }
 
-    _handleSwipe(event) {
-        if (!this._permitted() || !this._settings.get_boolean('protect-pinch-tail'))
+    _trace(event, details = {}) {
+        if (!this._settings?.get_boolean('diagnostic-logging'))
+            return;
+        console.log('FIVE_PINCH_TRACE ' + JSON.stringify({event,
+            monotonic_us: GLib.get_monotonic_time(),
+            workspace: global.workspace_manager?.get_active_workspace_index(),
+            overviewVisible: Main.overview.visible,
+            ...(event === 'workspace-changed' ? {stack: new Error('Workspace activation signal').stack} : {}),
+            ...details}));
+    }
+
+    _initDiagnostics() {
+        const watch = (object, signal, name) => {
+            if (!object?.connect)
+                return;
+            try {
+                const id = object.connect(signal, (_object, ...args) => this._trace(name, {
+                    signal, values: args.filter(v => typeof v === 'number' || typeof v === 'boolean'),
+                    workspace: global.workspace_manager.get_active_workspace_index(),
+                }));
+                this._diagnosticHooks.push([object, id]);
+            } catch (_) { /* Optional observer; never modify a tracker. */ }
+        };
+        const trackers = [
+            ['overview', Main.overview._swipeTracker],
+            ['workspace-animation', Main.wm?._workspaceAnimation?._swipeTracker],
+            ['overview-workspaces', Main.overview._overview?.controls?._workspacesDisplay?._swipeTracker],
+        ];
+        this._trace('observer-availability', {trackers: trackers.map(([name, object]) => ({name, available: Boolean(object?.connect)}))});
+        for (const [name, tracker] of trackers) {
+            for (const signal of ['begin', 'update', 'end'])
+                watch(tracker, signal, `tracker-${name}`);
+        }
+        watch(global.workspace_manager, 'active-workspace-changed', 'workspace-changed');
+        for (const signal of ['showing', 'shown', 'hiding', 'hidden'])
+            watch(Main.overview, signal, 'overview-state');
+        const actor = Main.layoutManager?.overviewGroup;
+        if (actor?.connect) {
+            for (const signal of ['captured-event', 'event::touchpad']) {
+                const id = actor.connect(signal, (_actor, event) => {
+                    this._tracePointer(event, `overview-group-${signal}`);
+                    return Clutter.EVENT_PROPAGATE; // Observation only.
+                });
+                this._diagnosticHooks.push([actor, id]);
+            }
+        }
+    }
+
+    _tracePointer(event, site) {
+        if (!this._settings?.get_boolean('diagnostic-logging'))
+            return;
+        const type = event.type();
+        const types = Clutter.EventType;
+        let kind;
+        if (type === types.TOUCHPAD_SWIPE) kind = 'swipe';
+        else if (type === types.SCROLL) kind = 'scroll';
+        else if (type === types.BUTTON_PRESS) kind = 'button-press';
+        else if (type === types.BUTTON_RELEASE) kind = 'button-release';
+        else if (type === types.MOTION && this._tailGuard?.pinch) kind = 'pointer-motion-in-tail';
+        else return; // Never inspect key events or application text.
+        const details = {site, kind, event_ms: event.get_time(),
+            node: event.get_source_device()?.get_device_node()};
+        if (kind === 'swipe') {
+            details.phase = event.get_gesture_phase();
+            details.fingers = event.get_touchpad_gesture_finger_count();
+        } else if (kind === 'scroll') {
+            details.direction = event.get_scroll_direction();
+            details.delta = event.get_scroll_delta();
+        } else if (kind.startsWith('button-')) {
+            details.button = event.get_button();
+        }
+        this._trace('pointer-observation', details);
+    }
+
+    _handleScroll(event) {
+        if (!this._permitted() || !this._settings.get_boolean('protect-rinertia'))
             return Clutter.EVENT_PROPAGATE;
+        const device = event.get_source_device();
+        const now = GLib.get_monotonic_time();
+        const elapsedMs = (Math.floor(now / 1000) - event.get_time()) >>> 0;
+        const at = Math.floor(now / 1000) * 1000 - elapsedMs * 1000;
+        const stop = this._rinertiaGuard.filter(device?.get_device_name(), at, now);
+        this._trace('rinertia-scroll', {device: device?.get_device_name(),
+            node: device?.get_device_node(), event_us: at, stop});
+        if (stop)
+            this._tailStatus('Blocked rinertia scrolling from the five-finger interaction.');
+        return stop ? Clutter.EVENT_STOP : Clutter.EVENT_PROPAGATE;
+    }
+
+    _handleSwipe(event) {
+        if (!this._permitted() || !this._settings.get_boolean('protect-pinch-tail')) {
+            this._trace('swipe-bypass', {permitted: this._permitted(),
+                protection: this._settings.get_boolean('protect-pinch-tail'),
+                phase: event.get_gesture_phase(), fingers: event.get_touchpad_gesture_finger_count()});
+            return Clutter.EVENT_PROPAGATE;
+        }
         const phases = Clutter.TouchpadGesturePhase;
         const phase = event.get_gesture_phase();
         const name = phase === phases.BEGIN ? 'begin' : phase === phases.END ? 'end' :
@@ -70,6 +177,9 @@ export default class FivePinch extends Extension {
         const at = Math.floor(now / 1000) * 1000 - elapsedMs * 1000;
         const fingers = event.get_touchpad_gesture_finger_count();
         const stop = this._tailGuard.filter(node, name, fingers, at, now);
+        this._trace('swipe-capture', {phase: name, fingers, node, event_us: at, stop,
+            guard: this._tailGuard.pinch ? {...this._tailGuard.pinch} : null,
+            blocked: Array.from(this._tailGuard.blocked.entries())});
         if (name === 'begin')
             this._tailStatus(`${fingers}-finger swipe on ${node ?? 'unknown device'}: ${stop ? 'blocked pinch tail' : 'passed through'}.`);
         return stop ? Clutter.EVENT_STOP : Clutter.EVENT_PROPAGATE;
@@ -214,19 +324,26 @@ export default class FivePinch extends Extension {
             return;
         }
         const now = GLib.get_monotonic_time();
+        this._trace('reader-message', {message});
         if (validContactState(message, now, run.sequence)) {
             run.sequence = message.sequence;
-            if (message.type === 'five-contact') {
+            if (message.type === 'contact-begin') {
+                this._rinertiaGuard?.begin(message.device, message.monotonic_us);
+            } else if (message.type === 'five-contact') {
                 const actions = ['pinch-in', 'pinch-out'].map(k => this._settings.get_string(k));
-                if (this._permitted() && this._settings.get_boolean('protect-pinch-tail') &&
+                if (this._permitted() &&
                     actions.some(action => action !== 'disabled' && action !== 'diagnostic')) {
-                    this._tailGuard?.arm(message.device, message.monotonic_us, now);
+                    if (this._settings.get_boolean('protect-pinch-tail'))
+                        this._tailGuard?.arm(message.device, message.monotonic_us, now);
+                    if (this._settings.get_boolean('protect-rinertia'))
+                        this._rinertiaGuard?.arm(message.device, message.monotonic_us, now);
                     this._tailStatus(`Five contacts: protecting ${message.device} until all fingers lift.`);
                 }
             } else {
                 this._tailGuard?.release(message.device, message.monotonic_us, now);
+                this._rinertiaGuard?.release(message.device, message.monotonic_us, now);
                 if (this._settings.get_string('tail-status').startsWith('Five contacts:'))
-                    this._tailStatus('All fingers lifted; no new swipe BEGIN observed during protection.');
+                    this._tailStatus('All fingers lifted; new gestures are allowed.');
             }
             return;
         }
@@ -239,6 +356,7 @@ export default class FivePinch extends Extension {
         const action = this._settings.get_string(`pinch-${message.direction}`);
         this._settings.set_string('last-event',
             `${++this._serial}. ${message.direction === 'in' ? 'Pinch in' : 'Pinch out'} · ${action}`);
+        this._trace('action-before', {action});
         switch (action) {
         case 'apps': Main.overview.showApps(); break;
         case 'apps-close':
@@ -250,6 +368,7 @@ export default class FivePinch extends Extension {
         case 'hide': Main.overview.hide(); break;
         // disabled/diagnostic never perform a Shell action.
         }
+        this._trace('action-after', {action});
     }
 
     _tailStatus(message) {
@@ -263,7 +382,10 @@ export default class FivePinch extends Extension {
     }
 
     _stop() {
+        if (this._run || this._tailGuard?.pinch)
+            this._trace('recognizer-stop', {hasReader: Boolean(this._run)});
         this._tailGuard?.reset();
+        this._rinertiaGuard?.reset();
         const run = this._run;
         this._run = null;
         if (run) {
@@ -280,6 +402,10 @@ export default class FivePinch extends Extension {
 
     disable() {
         this._alive = false;
+        for (const [object, id] of this._diagnosticHooks ?? []) {
+            try { object.disconnect(id); } catch (_) { /* Tracker already destroyed. */ }
+        }
+        this._diagnosticHooks = [];
         this._stop();
         this._cancel?.cancel();
         if (this._timer) GLib.source_remove(this._timer);

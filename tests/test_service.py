@@ -86,7 +86,7 @@ class NativeInputTests(unittest.TestCase):
     def test_five_contacts_arm_and_release_without_a_recognized_pinch(self):
         self.send([(0, 0, 0)])
         start = self.send(self.hand(ids=True))
-        self.assertEqual([r['event'] for r in start], ['five-contact'])
+        self.assertEqual([r['event'] for r in start], ['contact-begin', 'five-contact'])
         self.assertEqual(self.send(self.hand(1.03), self.start + .1), [])
         lift = []
         for i in range(5):
@@ -101,7 +101,7 @@ class NativeInputTests(unittest.TestCase):
             self.pad.detector.clear()
             self.send([(0, 0, 0)])
             events = self.hand(ids=True)[:count * 4] + [(0, 0, 0)]
-            self.assertEqual(self.send(events), [])
+            self.assertEqual([r['event'] for r in self.send(events)], ['contact-begin'])
             self.assertFalse(self.pad.tail_pending)
 
     def test_normalized_coordinates_can_recognize_pinch(self):
