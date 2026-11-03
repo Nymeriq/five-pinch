@@ -33,6 +33,8 @@ def main():
     gi.require_version('Adw', '1')
     from gi.repository import Adw, Gtk
 
+    Gtk.Window.set_default_icon_name('io.github.Nymeriq.FivePinch')
+
     class Setup(Adw.Application):
         def __init__(self):
             super().__init__(application_id='io.github.fivepinch.Settings')

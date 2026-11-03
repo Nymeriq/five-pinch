@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.7.0 — 2026-11-03
+
+- Publish rinertia virtual-scroll protection, confirmed working by the reference user.
+- Detect the actual running virtual device automatically; no rinertia dependency,
+  service stop, restart, configuration edit or global scroll setting change.
+- Keep normal behavior without rinertia, with an option to disable the integration.
+- Keep Original, Balanced and Relaxed recognition profiles.
+- Add a dedicated scalable Five Pinch application icon and preference-page icon.
+- Align the launcher desktop filename with its existing application ID for icon matching.
+- Retain uninstall/reset cleanup, prior packages and opt-in diagnostics.
+
 ## 0.6.6 — local test build
 
 - Add optional, enabled-by-default rinertia scrolling protection. Detect the

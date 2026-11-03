@@ -9,7 +9,7 @@ import shutil
 import subprocess
 import tempfile
 
-VERSION = '0.6.6'
+VERSION = '0.7.0'
 UUID = 'five-pinch@local.codex'
 SOURCE = Path(__file__).resolve().parents[1]
 
@@ -22,6 +22,10 @@ def build(output, staging_parent):
         extension.mkdir(parents=True)
         for name in ['metadata.json', 'extension.js', 'prefs.js', 'protocol.js', 'pinchTailGuard.js', 'rinertiaGuard.js', 'LICENSE']:
             shutil.copyfile(SOURCE / name, extension / name)
+        shutil.copytree(SOURCE / 'icons', extension / 'icons')
+        icon = root / 'usr/share/icons/hicolor/scalable/apps/io.github.Nymeriq.FivePinch.svg'
+        icon.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(SOURCE / 'icons/io.github.Nymeriq.FivePinch.svg', icon)
         (extension / 'reader').mkdir()
         for name in ['service.py', 'detector.py']:
             shutil.copyfile(SOURCE / 'reader' / name, extension / 'reader' / name)
@@ -32,7 +36,7 @@ def build(output, staging_parent):
         for src, dest in [
             ('five-pinch-settings.py', 'usr/bin/five-pinch-settings'),
             ('five-pinch-reset.py', 'usr/bin/five-pinch-reset'),
-            ('five-pinch-settings.desktop', 'usr/share/applications/five-pinch-settings.desktop'),
+            ('five-pinch-settings.desktop', 'usr/share/applications/io.github.fivepinch.Settings.desktop'),
             ('70-five-pinch.rules', 'usr/lib/udev/rules.d/70-five-pinch.rules')]:
             path = root / dest
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -45,8 +49,8 @@ def build(output, staging_parent):
         (doc / 'copyright').write_text('Five Pinch\nCopyright (c) 2026 Five Pinch contributors\n\n' +
                                         (SOURCE / 'LICENSE').read_text())
         with gzip.GzipFile(filename=str(doc / 'changelog.gz'), mode='wb', mtime=0) as file:
-            file.write(b'five-pinch (0.6.6) experimental; urgency=low\n\n'
-                       b'  * Add scoped rinertia scrolling protection during five-contact interactions.\n\n'
+            file.write(b'five-pinch (0.7.0) experimental; urgency=low\n\n'
+                       b'  * Ship automatic rinertia protection and a dedicated Five Pinch icon.\n\n'
                        b' -- Five Pinch contributors  Tue, 03 Nov 2026 12:00:00 +0100\n')
         control = root / 'DEBIAN'
         control.mkdir()
@@ -58,7 +62,7 @@ Priority: optional
 Architecture: all
 Maintainer: Five Pinch contributors
 Installed-Size: {size}
-Depends: gnome-shell (>= 50), gnome-shell (<< 51), python3 (>= 3.10), python3-gi, gir1.2-adw-1, libglib2.0-bin, dconf-cli, util-linux, dconf-gsettings-backend | gsettings-backend, udev
+Depends: gnome-shell (>= 50), gnome-shell (<< 51), python3 (>= 3.10), python3-gi, gir1.2-adw-1, libglib2.0-bin, dconf-cli, util-linux, dconf-gsettings-backend | gsettings-backend, udev, hicolor-icon-theme
 Description: Experimental five-finger pinch gestures for GNOME 50
  English settings, app-grid and overview actions, and a supervised read-only
  touchpad recognizer. Any udev-classified touchpad can be tried, regardless of brand or bus.

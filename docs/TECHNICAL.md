@@ -126,7 +126,7 @@ python3 tests/check_shell_logic.py
 glib-compile-schemas --strict schemas
 desktop-file-validate packaging/five-pinch-settings.desktop
 udevadm verify packaging/70-five-pinch.rules
-python3 packaging/build_deb.py --output ../five-pinch_0.6.6_all.deb --staging-parent ../work/deb-build
+python3 packaging/build_deb.py --output ../five-pinch_0.7.0_all.deb --staging-parent ../work/deb-build
 ```
 
 Python 3, `dpkg-deb`, and `glib-compile-schemas` are needed to build. Debian
@@ -224,3 +224,10 @@ Run `gjs -m tests/rinertia_guard_test.js` for scope, expiry, new-cycle and recor
 failure-timing regression checks. Diagnostic traces are opt-in and turned off by
 default. The session recorder restores its previous logging setting when stopped
 normally; no raw logs are published with the source.
+
+The reference user confirmed that the 0.6.6 rinertia guard resolves the observed
+workspace change. Version 0.7.0 publishes this behavior with a dedicated icon.
+This confirmation covers that setup, not every rinertia version or touchpad.
+If rinertia is absent, inactive or no such virtual event source exists, the
+filter passes events through and needs no additional dependency or service.
+Installed icon files are package-owned and removed with the application.

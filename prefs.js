@@ -8,7 +8,8 @@ export default class FivePinchPreferences extends ExtensionPreferences {
     fillPreferencesWindow(window) {
         const settings = this.getSettings();
         window.set_default_size(620, 600);
-        const page = new Adw.PreferencesPage({title: 'Five Pinch', icon_name: 'input-touchpad-symbolic'});
+        Gtk.IconTheme.get_for_display(window.get_display()).add_search_path(`${this.path}/icons`);
+        const page = new Adw.PreferencesPage({title: 'Five Pinch', icon_name: 'io.github.Nymeriq.FivePinch'});
         window.add(page);
         const group = new Adw.PreferencesGroup({title: 'Five-finger pinch',
             description: 'GNOME 50 / Wayland. Any touchpad may be tried; tested on MacBook Pro 2017 only. Lift all fingers between gestures.'});

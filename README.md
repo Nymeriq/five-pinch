@@ -1,5 +1,7 @@
 # Five Pinch
 
+<img src="icons/io.github.Nymeriq.FivePinch.svg" alt="Five Pinch app icon" width="80" align="right">
+
 **Give your Linux laptop a five-finger shortcut to your apps.**
 
 Pinch five fingers together to open the application grid. Spread them apart to
@@ -48,7 +50,7 @@ The setup requires `curl` and `gpg`. If either is missing, install them with
 [What does the repository setup change?](docs/APT.md)
 
 Prefer a standalone installer? [Download the latest `.deb`](https://github.com/Nymeriq/five-pinch/releases/latest),
-open Terminal in your Downloads folder, and run `sudo apt install ./five-pinch_0.6.6_all.deb`.
+open Terminal in your Downloads folder, and run `sudo apt install ./five-pinch_0.7.0_all.deb`.
 Use the filename you downloaded. This option does not add the update repository.
 
 > [!IMPORTANT]
@@ -102,7 +104,9 @@ from being interpreted as workspace navigation while the app grid is closing.
 It does not stop or reconfigure rinertia. A new physical touchpad contact cycle
 restores scrolling immediately, and ordinary <=4-contact interactions do not
 activate the guard. Other mice are unaffected. Switch the option off to restore
-the earlier behavior. This integration is experimental and needs live testing.
+the earlier behavior. Confirmed working with rinertia on the reference MacBook Pro; other setups
+are welcome to test. If rinertia is absent or inactive, there is nothing to filter
+and ordinary scrolling is passed through. No extra dependency is installed.
 
 ### 3. Choose what your gestures do
 

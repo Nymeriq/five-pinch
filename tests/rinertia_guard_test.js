@@ -7,6 +7,8 @@ const g = new RinertiaGuard();
 check(!g.filter(name, 1000, 1000));
 g.arm(node, 2000, 2000);
 check(!g.filter('External Mouse', 3000, 3000));
+check(!g.filter(null, 3000, 3000));
+check(!g.filter('Unrelated virtual mouse', 3000, 3000));
 check(!g.filter('Apple SPI Touchpad', 3000, 3000));
 check(!g.filter(name, 1000, 3000));
 check(g.filter(name, 3000, 3000));

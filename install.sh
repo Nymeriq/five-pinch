@@ -33,6 +33,7 @@ trap 'if [[ -n ${stage:-} && -d $stage ]]; then /usr/bin/python3 -c "import shut
 for file in metadata.json extension.js prefs.js protocol.js pinchTailGuard.js rinertiaGuard.js LICENSE; do
     cp -- "$source_dir/$file" "$stage/$file"
 done
+cp -r -- "$source_dir/icons" "$stage/icons"
 mkdir -- "$stage/reader" "$stage/schemas"
 cp -- "$source_dir/reader/service.py" "$source_dir/reader/detector.py" "$stage/reader/"
 cp -- "$source_dir/schemas/"*.xml "$source_dir/schemas/gschemas.compiled" "$stage/schemas/"

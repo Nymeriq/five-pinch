@@ -5,7 +5,7 @@ software, not a declaration that your hardware is unsupported.
 
 | Laptop / touchpad | Input identity | Environment | Result / coverage |
 | --- | --- | --- | --- |
-| MacBook Pro 2017 / Apple SPI Touchpad | `001c:06cb:0557` | Ubuntu 26.04, GNOME 50, Wayland | Five positions tracked (11 slots); pinch candidates and live app-grid open/close confirmed. Package installation confirmed. 0.5.0 generic discovery/reader lifecycle rechecked. Balanced sensitivity in the local 0.6.0 trial confirmed comfortable by the user; Original and Relaxed remain available. |
+| MacBook Pro 2017 / Apple SPI Touchpad | `001c:06cb:0557` | Ubuntu 26.04, GNOME 50, Wayland | Five positions tracked (11 slots); pinch candidates and live app-grid open/close confirmed. Package installation confirmed. 0.5.0 generic discovery/reader lifecycle rechecked. Balanced sensitivity in the local 0.6.0 trial confirmed comfortable by the user; Original and Relaxed remain available. Rinertia conflict reproduced in a Shell trace; targeted virtual-scroll protection in 0.6.6 confirmed working by the user. |
 
 **Everything else:** not yet tested by this project. It may work without changes.
 Please send a documentation PR with your results, or a code PR with any improvements
