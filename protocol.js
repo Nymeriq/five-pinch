@@ -6,3 +6,11 @@ export function validCandidate(m, now, lastSequence) {
         Number.isSafeInteger(m.monotonic_us) &&
         now >= m.monotonic_us && now - m.monotonic_us <= 300000;
 }
+
+export function validPinchEnd(m, now, lastSequence) {
+    return m !== null && typeof m === 'object' && m.type === 'pinch-end' &&
+        typeof m.device === 'string' && /^\/dev\/input\/event[0-9]+$/.test(m.device) &&
+        Number.isSafeInteger(m.sequence) && m.sequence > lastSequence &&
+        Number.isSafeInteger(m.monotonic_us) &&
+        now >= m.monotonic_us && now - m.monotonic_us <= 300000;
+}

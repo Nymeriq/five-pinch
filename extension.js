@@ -4,11 +4,13 @@ import GLib from 'gi://GLib';
 import Clutter from 'gi://Clutter';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
-import {validCandidate} from './protocol.js';
+import {PinchTailGuard} from './pinchTailGuard.js';
+import {validCandidate, validPinchEnd} from './protocol.js';
 
 export default class FivePinch extends Extension {
     enable() {
         this._alive = true;
+        this._tailGuard = new PinchTailGuard();
         this._settings = this.getSettings();
         this._cancel = new Gio.Cancellable();
         this._session = null;
@@ -20,7 +22,7 @@ export default class FivePinch extends Extension {
         this._serial = 0;
         this._run = null;
         this._settingsSignal = this._settings.connect('changed', (_s, key) => {
-            if (['enabled', 'pinch-in', 'pinch-out', 'device-path', 'sensitivity'].includes(key)) {
+            if (['enabled', 'pinch-in', 'pinch-out', 'device-path', 'sensitivity', 'protect-pinch-tail'].includes(key)) {
                 this._stop();
                 this._retryAt = 0;
                 this._tick();
@@ -33,6 +35,8 @@ export default class FivePinch extends Extension {
                 this._pauseUntil = GLib.get_monotonic_time() + 900000;
                 this._stop();
             }
+            if (event.type() === Clutter.EventType.TOUCHPAD_SWIPE)
+                return this._handleSwipe(event);
             return Clutter.EVENT_PROPAGATE;
         });
         this._sleepSignal = Gio.DBus.system.signal_subscribe(
@@ -50,6 +54,23 @@ export default class FivePinch extends Extension {
         });
         this._status('Checking session…');
         this._initSession();
+    }
+
+    _handleSwipe(event) {
+        if (!this._permitted() || !this._settings.get_boolean('protect-pinch-tail'))
+            return Clutter.EVENT_PROPAGATE;
+        const phases = Clutter.TouchpadGesturePhase;
+        const phase = event.get_gesture_phase();
+        const name = phase === phases.BEGIN ? 'begin' : phase === phases.END ? 'end' :
+            phase === phases.CANCEL ? 'cancel' : 'update';
+        const node = event.get_source_device()?.get_device_node();
+        const now = GLib.get_monotonic_time();
+        // Clutter milliseconds wrap at 2^32; map them to current monotonic time.
+        const elapsedMs = (Math.floor(now / 1000) - event.get_time()) >>> 0;
+        const at = Math.floor(now / 1000) * 1000 - elapsedMs * 1000;
+        return this._tailGuard.filter(node, name,
+            event.get_touchpad_gesture_finger_count(), at, now)
+            ? Clutter.EVENT_STOP : Clutter.EVENT_PROPAGATE;
     }
 
     _initSession() {
@@ -191,6 +212,11 @@ export default class FivePinch extends Extension {
             return;
         }
         const now = GLib.get_monotonic_time();
+        if (validPinchEnd(message, now, run.sequence)) {
+            run.sequence = message.sequence;
+            this._tailGuard?.release(message.device, message.monotonic_us, now);
+            return;
+        }
         if (!validCandidate(message, now, run.sequence))
             return;
         run.sequence = message.sequence;
@@ -200,6 +226,9 @@ export default class FivePinch extends Extension {
         const action = this._settings.get_string(`pinch-${message.direction}`);
         this._settings.set_string('last-event',
             `${++this._serial}. ${message.direction === 'in' ? 'Pinch in' : 'Pinch out'} · ${action}`);
+        if (action !== 'disabled' && action !== 'diagnostic' &&
+            this._settings.get_boolean('protect-pinch-tail'))
+            this._tailGuard?.arm(message.device, message.monotonic_us, now);
         switch (action) {
         case 'apps': Main.overview.showApps(); break;
         case 'apps-close':
@@ -219,6 +248,7 @@ export default class FivePinch extends Extension {
     }
 
     _stop() {
+        this._tailGuard?.reset();
         const run = this._run;
         this._run = null;
         if (run) {

@@ -114,6 +114,8 @@ def find_device():
 
 class Touchpad:
     def __init__(self, path):
+        self.path = os.path.realpath(path)
+        self.tail_pending = False
         self.fd = os.open(path, os.O_RDONLY | os.O_NONBLOCK | os.O_CLOEXEC)
         try:
             name = bytearray(256)
@@ -199,8 +201,12 @@ class Touchpad:
                 if not self.ready:
                     self.ready = not points and not self.buttons
                     continue
+                if not points and getattr(self, 'tail_pending', False):
+                    self.tail_pending = False
+                    results.append({'event': 'pinch-released', 'time': now})
                 candidate = self.detector.frame(now, points, bool(self.buttons))
                 if candidate:
+                    self.tail_pending = True
                     results.append(candidate)
         return results
 
@@ -238,9 +244,12 @@ def run(device_path=None, sensitivity='balanced'):
                 try:
                     for candidate in touchpad.read():
                         sequence += 1
-                        emit({'type': 'pinch', 'direction': candidate['direction'],
-                              'sequence': sequence,
-                              'monotonic_us': int(time.monotonic() * 1000000)})
+                        message = {'type': 'pinch-end' if candidate['event'] == 'pinch-released' else 'pinch',
+                                   'device': touchpad.path, 'sequence': sequence,
+                                   'monotonic_us': int(candidate['time'] * 1000000)}
+                        if message['type'] == 'pinch':
+                            message['direction'] = candidate['direction']
+                        emit(message)
                 except (OSError, ValueError) as exc:
                     touchpad.close()
                     touchpad = None

@@ -48,7 +48,7 @@ The setup requires `curl` and `gpg`. If either is missing, install them with
 [What does the repository setup change?](docs/APT.md)
 
 Prefer a standalone installer? [Download the latest `.deb`](https://github.com/Nymeriq/five-pinch/releases/latest),
-open Terminal in your Downloads folder, and run `sudo apt install ./five-pinch_0.6.1_all.deb`.
+open Terminal in your Downloads folder, and run `sudo apt install ./five-pinch_0.6.2_all.deb`.
 Use the filename you downloaded. This option does not add the update repository.
 
 > [!IMPORTANT]
@@ -79,6 +79,17 @@ Use the filename you downloaded. This option does not add the update repository.
 Lift all fingers after switching modes. The change affects recognition, not
 continuous animation: Five Pinch triggers a desktop action when a pinch is
 recognized; it does not animate the grid in proportion to finger movement.
+
+### Avoid an extra swipe at the end
+
+**Protect pinch ending** is an experimental, optional switch. After a recognized
+five-finger pinch, it filters a new three/four-finger swipe on the same touchpad
+while you lift your fingers. Independent gestures started with four or fewer
+fingers remain unchanged. It does not change GNOME's global gesture sensitivity.
+
+Turn it off to restore the earlier behavior. It cannot cancel a native swipe
+that was already underway before the pinch was recognized. Live testing of this
+protection is still pending.
 
 ### 3. Choose what your gestures do
 

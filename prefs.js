@@ -16,6 +16,10 @@ export default class FivePinchPreferences extends ExtensionPreferences {
         const enable = new Adw.SwitchRow({title: 'Enable recognition'});
         settings.bind('enabled', enable, 'active', Gio.SettingsBindFlags.DEFAULT);
         group.add(enable);
+        const tail = new Adw.SwitchRow({title: 'Protect pinch ending',
+            subtitle: 'Experimental: suppress a new three/four-finger swipe in a recognized five-finger pinch ending. Independent gestures stay unchanged.'});
+        settings.bind('protect-pinch-tail', tail, 'active', Gio.SettingsBindFlags.DEFAULT);
+        group.add(tail);
         const profiles = ['original', 'balanced', 'relaxed'];
         const sensitivity = new Adw.ComboRow({title: 'Gesture sensitivity',
             subtitle: 'Balanced needs less movement. Relaxed is more sensitive. Original restores the previous feel.',

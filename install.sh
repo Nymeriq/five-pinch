@@ -30,7 +30,7 @@ glib-compile-schemas --strict "$source_dir/schemas"
 mkdir -p -- "$(dirname -- "$dest")"
 stage=$(mktemp -d "$(dirname -- "$dest")/.five-pinch-stage.XXXXXX")
 trap 'if [[ -n ${stage:-} && -d $stage ]]; then /usr/bin/python3 -c "import shutil,sys; shutil.rmtree(sys.argv[1])" "$stage"; fi' EXIT
-for file in metadata.json extension.js prefs.js protocol.js LICENSE; do
+for file in metadata.json extension.js prefs.js protocol.js pinchTailGuard.js LICENSE; do
     cp -- "$source_dir/$file" "$stage/$file"
 done
 mkdir -- "$stage/reader" "$stage/schemas"

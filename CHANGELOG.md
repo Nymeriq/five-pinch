@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.6.2 — local test build
+
+- Add optional Protect pinch ending, scoped to the same physical touchpad and
+  a confirmed five-finger pinch with an assigned action.
+- Suppress complete new native 3/4-finger swipe sequences begun in that pinch's
+  tail. Leave independent gestures started with four or fewer fingers alone.
+- Report the full hand lift from the reader, so a new physical gesture is allowed
+  immediately. Use event timestamps to distinguish delayed old events.
+- Do not interrupt native swipes that began before pinch recognition.
+- No global swipe sensitivity changes or changes to GNOME tracker settings.
+- Keep a switch and the 0.6.1 package as fallbacks; live testing is pending.
+
 ## 0.6.1 — 2026-11-03
 
 - First public release of the three sensitivity modes tested in the local 0.6.0 build.

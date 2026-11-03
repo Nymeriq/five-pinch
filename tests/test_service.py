@@ -71,6 +71,28 @@ class NativeInputTests(unittest.TestCase):
         self.assertEqual([r['direction'] for r in results], ['in'])
         self.assertEqual(self.send(self.hand(.7), self.start + .11), [])
 
+    def test_release_is_reported_only_after_a_recognized_pinch(self):
+        self.send([(0, 0, 0)])
+        self.send(self.hand(ids=True))
+        self.assertEqual(self.send(self.hand(.75), self.start + .1)[0]['direction'], 'in')
+        lift = []
+        for i in range(5):
+            lift.extend([(3, 47, i), (3, 57, -1)])
+        lift.append((0, 0, 0))
+        result = self.send(lift, self.start + .11)
+        self.assertEqual([r['event'] for r in result], ['pinch-released'])
+        self.assertEqual(self.send([(0, 0, 0)], self.start + .12), [])
+
+    def test_ordinary_contact_cycle_sends_no_release(self):
+        self.send([(0, 0, 0)])
+        self.send(self.hand(ids=True))
+        self.send(self.hand(1.03), self.start + .1)
+        lift = []
+        for i in range(5):
+            lift.extend([(3, 47, i), (3, 57, -1)])
+        lift.append((0, 0, 0))
+        self.assertEqual(self.send(lift, self.start + .11), [])
+
     def test_normalized_coordinates_can_recognize_pinch(self):
         self.pad.state = Slots(0, 10, 20, 10)
         self.send([(0, 0, 0)])

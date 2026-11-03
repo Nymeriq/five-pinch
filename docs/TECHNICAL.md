@@ -126,16 +126,16 @@ python3 tests/check_shell_logic.py
 glib-compile-schemas --strict schemas
 desktop-file-validate packaging/five-pinch-settings.desktop
 udevadm verify packaging/70-five-pinch.rules
-python3 packaging/build_deb.py --output ../five-pinch_0.6.1_all.deb --staging-parent ../work/deb-build
+python3 packaging/build_deb.py --output ../five-pinch_0.6.2_all.deb --staging-parent ../work/deb-build
 ```
 
 Python 3, `dpkg-deb`, and `glib-compile-schemas` are needed to build. Debian
 architecture `all` means interpreted code/data, not universal hardware support.
 The builder never installs the package or runs maintainer scripts.
 
-52 Python tests cover geometry, native frames, compatibility/discovery,
-normalized fallback, control leases and setup migration. Eight protocol checks
-and 13 mocked Shell checks cover action dispatch and lifecycle guards. None
+54 Python tests cover geometry, native frames, compatibility/discovery,
+normalized fallback, control leases and setup migration. Protocol and pinch-tail checks
+and mocked Shell checks cover action dispatch and lifecycle guards. None
 substitutes for community hardware tests.
 
 Optional checks with your current user's device access, without sudo:
@@ -176,3 +176,22 @@ For a full package rollback, disable the extension and install the previous
 `.deb` with `sudo apt install --allow-downgrades ./five-pinch_0.5.1_all.deb`, then
 log out and back in. A newer sensitivity setting may remain stored but is ignored
 by 0.5.1. Your action choices are preserved.
+
+## Pinch-tail protection (experimental)
+
+The stage capture handler filters complete swipe sequences only when their BEGIN
+falls after a confirmed actionable five-finger pinch and no later than its full
+hand lift, on the same `/dev/input/eventN` source. A `pinch-end` message carries
+the lift timestamp. Queued old native events can still be filtered, while a new
+hand cycle after that timestamp is passed through. Two-finger scrolls are never
+claimed; standalone one/two/three/four-finger gestures do not arm the guard.
+
+No private Shell tracker fields or global input settings are changed. Swipes
+already underway at recognition time are left alone to avoid orphaning a Shell
+animation. IPC scheduling races can therefore still allow a competing native
+swipe. A missing release expires after three seconds; disable, lock/session
+pause or reader restart clears the guard. Diagnostic/disabled actions do not
+arm it. `Protect pinch ending` restores prior behavior when switched off.
+
+Run `gjs -m tests/pinch_tail_test.js` for state and timestamp checks. These do
+not prove ordering against a live compositor; hardware/user feedback is needed.

@@ -10,10 +10,11 @@ root = Path(__file__).resolve().parents[1]
 with tempfile.TemporaryDirectory(prefix='five-pinch-gjs-') as name:
     target = Path(name)
     source = (root / 'extension.js').read_text()
-    source = source.replace("import Clutter from 'gi://Clutter';", "const Clutter = {EventType: {KEY_PRESS: 1}, EVENT_PROPAGATE: 0};")
+    source = source.replace("import Clutter from 'gi://Clutter';", "const Clutter = {EventType: {KEY_PRESS: 1}, EVENT_PROPAGATE: 0, EVENT_STOP: 1, TouchpadGesturePhase: {BEGIN: 1, UPDATE: 2, END: 3, CANCEL: 4}};")
     source = source.replace("'resource:///org/gnome/shell/ui/main.js'", "'./main.js'")
     source = source.replace("import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';", "class Extension {}")
     (target / 'extension.js').write_text(source)
+    (target / 'pinchTailGuard.js').write_text((root / 'pinchTailGuard.js').read_text())
     (target / 'protocol.js').write_text((root / 'protocol.js').read_text())
     (target / 'main.js').write_text('''
 export const sessionMode = {isLocked: false, isGreeter: false, hasOverview: true};
@@ -24,6 +25,7 @@ export const overview = {dash: {showAppsButton: {checked: false}}, showApps() {a
     (target / 'test.js').write_text('''
 import GLib from 'gi://GLib';
 import FivePinch from './extension.js';
+import {PinchTailGuard} from './pinchTailGuard.js';
 import * as Main from './main.js';
 let checks = 0;
 function check(value) { checks++; if (!value) throw new Error(`Check ${checks} failed`); }
@@ -84,6 +86,27 @@ values['pinch-out'] = 'hide';
 extension._lastAction = 0;
 extension._message(run, {...candidate(8), direction: 'out'});
 check(Main.actions.join() === 'apps,hide,hide'); // Existing hide action still works.
+extension._tailGuard = new PinchTailGuard();
+values['protect-pinch-tail'] = true;
+const node = '/dev/input/event5';
+const stamp = Math.floor(GLib.get_monotonic_time() / 1000) * 1000;
+const swipe = (phase, fingers, device = node, at = stamp) => ({
+    get_gesture_phase() {return phase;}, get_touchpad_gesture_finger_count() {return fingers;},
+    get_source_device() {return {get_device_node() {return device;}};},
+    get_time() {return Math.floor(at / 1000) >>> 0;},
+});
+for (const fingers of [1, 2, 3, 4])
+    check(extension._handleSwipe(swipe(1, fingers)) === 0);
+extension._lastAction = 0;
+extension._message(run, {...candidate(9), device: node, monotonic_us: stamp});
+check(extension._handleSwipe(swipe(1, 4)) === 1);
+check(extension._handleSwipe(swipe(2, 4)) === 1);
+check(extension._handleSwipe(swipe(3, 4)) === 1);
+check(extension._handleSwipe(swipe(1, 4, '/dev/input/event6')) === 0);
+extension._message(run, {type: 'pinch-end', sequence: 10, device: node, monotonic_us: stamp});
+check(extension._tailGuard.pinch.released === stamp);
+values['protect-pinch-tail'] = false;
+check(extension._handleSwipe(swipe(1, 4)) === 0);
 let killed = 0, cancelled = 0;
 const pipe = {close_async(_p, _c, callback) {callback(this, {});}, close_finish() {}};
 extension._run = {cancel: {cancel() {cancelled++;}},
