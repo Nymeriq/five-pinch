@@ -1,46 +1,36 @@
-# Five Pinch
+<p align="center">
+  <img src="icons/io.github.Nymeriq.FivePinch.svg" width="88" height="88" alt="Five Pinch icon">
+</p>
+<h1 align="center">Five Pinch</h1>
+<p align="center">Five-finger pinch gestures for GNOME on Wayland.</p>
+<p align="center">
+  <a href="https://fivepinch.nymeriq.com">Website</a> ·
+  <a href="https://fivepinch.nymeriq.com/docs/">Documentation</a> ·
+  <a href="https://github.com/Nymeriq/five-pinch/releases/latest">Download</a> ·
+  <a href="https://github.com/Nymeriq/five-pinch/issues">Issues</a>
+</p>
+<p align="center">
+  <a href="https://github.com/Nymeriq/five-pinch/releases/latest"><img src="https://img.shields.io/github/v/release/Nymeriq/five-pinch?color=087d69&amp;label=release" alt="Latest release"></a>
+  <a href="https://fivepinch.nymeriq.com/docs/#requirements"><img src="https://img.shields.io/badge/GNOME-50-4a86cf" alt="GNOME 50"></a>
+  <a href="https://fivepinch.nymeriq.com/docs/#requirements"><img src="https://img.shields.io/badge/session-Wayland-64716a" alt="Wayland session"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-64716a" alt="MIT license"></a>
+</p>
 
-<img src="icons/io.github.Nymeriq.FivePinch.svg" alt="Five Pinch app icon" width="80" align="right">
+![Five fingers pinch inward to open apps and spread outward to return to the desktop. Gesture illustration.](docs/images/five-pinch-gestures.svg)
 
-**Give your Linux laptop a five-finger shortcut to your apps.**
+Five Pinch started with a 2017 MacBook Pro running Ubuntu and a missing trackpad gesture. It brings five-finger pinch actions to **MacBooks and other Linux touchpads**, without a brand or model allowlist.
 
-Pinch five fingers together to open the application grid. Spread them apart to
-close it and return to your desktop. Choose different actions if you prefer.
+- **Two directions, your actions.** Open or close the app grid or overview.
+- **Three sensitivities.** Original, Balanced, and Sensitive.
+- **Automatic rinertia protection.** Filter leftover virtual scrolling around a five-finger interaction; no extra dependency when rinertia is absent.
+- **Reversible installation.** Read-only recognition, documented reset, package removal, and rollback.
 
-![Five Pinch gesture illustration: five fingers move inward to open the app grid, and outward to close it.](docs/images/five-pinch-gestures.svg)
+> [!NOTE]
+> Requires **GNOME 50 on Wayland** and five independently tracked touch positions. Tested on a **2017 MacBook Pro / Apple SPI Touchpad / Ubuntu 26.04**. Other hardware is welcome to try, but is not yet verified. [Compatibility details →](https://fivepinch.nymeriq.com/docs/#requirements)
 
-Five Pinch started with a **2017 MacBook Pro running Ubuntu** and a missing
-trackpad gesture. The goal is to bring five-finger pinch gestures to MacBooks
-**and other laptops running Linux**, even when the desktop does not recognize
-that gesture out of the box.
+## Install
 
-**Have a different touchpad? You're welcome to try it.** There is no brand or
-model restriction. So far, it has only been tested on the 2017 MacBook Pro's
-Apple SPI touchpad; other hardware may work, but has not been verified yet.
-
-[Get started](#get-started) · [Download a .deb](https://github.com/Nymeriq/five-pinch/releases/latest) · [Report your hardware](CONTRIBUTING.md) · [MIT license](LICENSE)
-
-## Before you install
-
-- **GNOME 50 on Wayland**, such as Ubuntu 26.04 with its default GNOME desktop.
-- A touchpad that can track **five fingers separately**.
-- This is a **Linux extension**, not a macOS app. Other desktops and GNOME versions
-  are not supported by the current release.
-
-**No separate Extension Manager app is required.** Open **Five Pinch Settings**
-directly. The Debian package declares its GNOME dependencies; APT installs any
-missing required packages automatically. Extension Manager is optional.
-
-Not sure about your touchpad? You can install it and check the status in settings.
-Five Pinch is experimental: detection may need work on your hardware, and other
-gesture extensions can interfere. You can turn it off or uninstall it at any time.
-
-## Get started
-
-### 1. Install
-
-On Ubuntu, open **Terminal** and paste these commands. They add the Five Pinch
-package repository and install the app:
+Add the signed APT repository and install Five Pinch:
 
 ```bash
 curl -fL https://nymeriq.github.io/five-pinch/setup-apt.sh -o /tmp/five-pinch-apt-setup.sh
@@ -49,110 +39,54 @@ sudo apt update
 sudo apt install five-pinch
 ```
 
-The setup requires `curl` and `gpg`. If either is missing, install them with
-`sudo apt install curl gpg`, then repeat the commands above.
-[What does the repository setup change?](docs/APT.md)
+Requires `curl` and `gpg`. If missing, run `sudo apt update && sudo apt install curl gpg` first. Required application dependencies are installed by APT. **Extension Manager is optional.**
 
-Prefer a standalone installer? [Download the latest `.deb`](https://github.com/Nymeriq/five-pinch/releases/latest),
-open Terminal in your Downloads folder, and run `sudo apt install ./five-pinch_0.7.2_all.deb`.
-Use the filename you downloaded. This option does not add the update repository.
+Prefer a standalone installer? [Download the latest `.deb`](https://github.com/Nymeriq/five-pinch/releases/latest) and install it with `sudo apt install ./five-pinch_0.7.2_all.deb` from its folder. This does not add the update repository.
 
 > [!IMPORTANT]
-> **After installation, save your work, log out, and log back in.**
-> This lets GNOME discover the extension and refresh touchpad access.
-> Locking and unlocking the screen is not the same as logging out.
+> **Save your work, log out, and log back in after installation or upgrade.** Locking the screen is not enough.
 
-### 2. Open settings and try detection
+## Set up
 
-1. Open **Five Pinch Settings** from your applications.
-2. Click **Enable** if prompted. Active installations open settings directly.
-3. Leave **Advanced → Touchpad** empty to select your touchpad automatically.
-4. Set both **Pinch in** and **Pinch out** to **Detect only**,
-   then switch on **Enable gestures**.
-5. Place five fingers on the touchpad and pinch inward or spread outward.
-   **Lift all fingers between gestures.** Check **Diagnostics → Last gesture**.
+1. Open **Five Pinch Settings**. Click **Enable** if prompted; active installations open settings directly.
+2. Choose **Detect only** for both directions, then turn on **Enable gestures**.
+3. Try an inward and outward pinch. Lift all fingers between attempts. Check **Diagnostics → Last gesture**.
+4. Choose your actions. A useful starting point:
 
-### Adjust the feel
+| Gesture | Action |
+| --- | --- |
+| Pinch in | Open app grid |
+| Pinch out | Close app grid |
 
-**Sensitivity** offers three modes, applied immediately:
+Start with **Balanced**. Choose **Sensitive** for smaller movements, or **Original** for firmer movement. All three options change only Five Pinch's recognition, not global gesture settings.
 
-- **Balanced** (default): less movement is needed than in the original release.
-  Confirmed comfortable in the reference MacBook Pro user trial.
-- **Sensitive**: smaller movements can trigger a gesture; try this if casual pinches
-  are missed. If unwanted gestures occur, switch back to Balanced or Original.
-- **Original**: the same recognition thresholds as 0.5.1.
+<details>
+<summary>See the settings window</summary>
+<p align="center"><img src="docs/images/settings.png" width="520" alt="Five Pinch 0.7.2 settings with four primary controls, Advanced and Diagnostics."></p>
+</details>
 
-Lift all fingers after switching modes. The change affects recognition, not
-continuous animation: Five Pinch triggers a desktop action when a pinch is
-recognized; it does not animate the grid in proportion to finger movement.
+Device selection and the two protection switches are under **Advanced**. Leave **Touchpad** empty for automatic selection. [Complete setup guide →](https://fivepinch.nymeriq.com/docs/#setup)
 
-### Avoid an extra swipe at the end
+## How it works
 
-**Advanced → Swipe protection** is an experimental, optional switch. Once an interaction reaches
-five contacts, it filters a new three/four-finger swipe on the same touchpad
-while you lift your fingers, even if the pinch did not cross its action threshold. Independent gestures started with four or fewer
-fingers remain unchanged. It does not change GNOME's global gesture sensitivity.
+A supervised Python reader tracks five stable finger positions. The GNOME extension turns a recognized pinch into an action. It does not replace your driver, modify firmware, grab the touchpad exclusively, or run a permanent root service.
 
-Turn it off to restore the earlier behavior. It cannot cancel a native swipe
-that was already underway before the five-contact notification reached GNOME. Live testing of this
-revised protection is still pending. The settings show its latest decision under
-**Pinch ending protection**, without recording finger coordinates.
+The optional rinertia guard recognizes its running virtual device and filters scrolling only around five-contact interactions and their momentum tail. A new physical touchpad interaction clears that guard. Without rinertia, other pointer events pass through.
 
-### Using rinertia for smooth scrolling?
+This triggers desktop actions; it does **not** provide continuous, finger-following app-grid animation. Extension bugs or conflicts can still affect a desktop session. [Architecture, permissions, protections, and limits →](https://fivepinch.nymeriq.com/docs/#how-it-works)
 
-**Advanced → rinertia protection** automatically recognizes events from the
-`rinertia Virtual Device` and filters its scrolling during five-finger
-interactions and their short momentum tail. This prevents leftover scrolling
-from being interpreted as workspace navigation while the app grid is closing.
-
-It does not stop or reconfigure rinertia. A new physical touchpad contact cycle
-restores scrolling immediately, and ordinary <=4-contact interactions do not
-activate the guard. Other mice are unaffected. Switch the option off to restore
-the earlier behavior. Confirmed working with rinertia on the reference MacBook Pro; other setups
-are welcome to test. If rinertia is absent or inactive, there is nothing to filter
-and ordinary scrolling is passed through. No extra dependency is installed.
-
-### 3. Choose what your gestures do
-
-Once detection works, try this setup:
-
-| Gesture | Setting | Result |
-| --- | --- | --- |
-| Pinch five fingers inward | **Pinch in → Open app grid** | See your installed applications |
-| Spread five fingers outward | **Pinch out → Close app grid** | Close the app grid and return to your desktop |
-
-You can also choose overview actions, or disable either direction. **Close app
-grid** and **Close overview** are separate actions; choose the one you want.
-Fresh installations start with recognition and gesture actions disabled, so
-nothing happens until you configure them.
-
-## Need a hand?
-
-- **The app or extension doesn't appear:** log out and back in after installation.
-- **No gesture is detected:** check **Diagnostics → Recognizer**. Keep the device
-  field empty first; if you have multiple touchpads, see
-  [how to choose your touchpad](docs/TECHNICAL.md#choosing-a-touchpad-manually).
-- **Gestures behave unexpectedly:** turn off **Enable gestures** and check
-  whether another gesture extension is active.
-- **Previously installed from source:** the settings launcher can offer
-  **Use packaged version**. It backs up the old manual copy; log out and back
-  in afterwards. [Details](docs/TECHNICAL.md#previous-manual-installations).
-
-## Updates and removal
-
-With the repository set up, Five Pinch updates alongside your other packages.
-To update just Five Pinch:
+## Update
 
 ```bash
 sudo apt update
 sudo apt install --only-upgrade five-pinch
 ```
 
-**Log out and back in after updating**, so GNOME loads the new code.
-Your gesture settings are preserved.
+Log out and back in. Your settings are preserved. Ordinary system upgrades also include Five Pinch when the repository is configured.
 
-To stop it, turn off **Enable gestures** in settings or disable **Five Pinch**
-in the Extensions app. To uninstall:
+## Uninstall
+
+Run the reset as your own desktop user, without sudo:
 
 ```bash
 five-pinch-reset
@@ -160,35 +94,20 @@ sudo apt purge five-pinch
 sudo apt update
 ```
 
-**Log out and back in after removal** to finish unloading Shell code and refresh
-normal touchpad permissions. `five-pinch-reset` runs as your own user (without
-sudo): it disables Five Pinch and clears its gesture settings. Package removal
-also attempts this for users with reachable session buses. `purge` removes the
-app, its udev rule, and its optional APT source/key/pinning files.
+Log out and back in afterwards. This resets Five Pinch's own settings and removes the package and optional repository setup. On shared machines, each user should run the reset before removal; logged-out users' personal databases are not edited as root. Intentional backups and diagnostic recordings are retained. [Removal and rollback details →](https://fivepinch.nymeriq.com/docs/#uninstall)
 
-On shared machines, each user should run `five-pinch-reset` in their own session
-before removal; settings belonging to logged-out users are not edited as root.
-Your intentional backups and hardware recordings are kept. Other extensions,
-drivers and desktop preferences are left alone. [Removal and rollback details](docs/APT.md#revert-or-remove).
+## Documentation
 
-## Help it work on more laptops
+[Install](https://fivepinch.nymeriq.com/docs/#install) · [Actions](https://fivepinch.nymeriq.com/docs/#actions) · [Sensitivity](https://fivepinch.nymeriq.com/docs/#sensitivity) · [rinertia](https://fivepinch.nymeriq.com/docs/#protection) · [Troubleshooting](https://fivepinch.nymeriq.com/docs/#troubleshooting) · [Rollback](https://fivepinch.nymeriq.com/docs/#updates)
 
-**Tested on:** 2017 MacBook Pro · Apple SPI Touchpad · Ubuntu 26.04 · GNOME 50 · Wayland.
+For contributors: [Technical guide](docs/TECHNICAL.md) · [Development](docs/DEVELOPMENT.md) · [APT publishing](docs/APT.md) · [Plain-text documentation](https://fivepinch.nymeriq.com/docs/reference.txt)
 
-Tried it on another MacBook or another brand? We'd love to hear what happened,
-including when it doesn't work. [Open an issue](https://github.com/Nymeriq/five-pinch/issues)
-with your laptop model, Ubuntu/Linux version, GNOME version, and the status shown
-in settings. Please don't include passwords or other personal information.
+## Contribute
 
-Documentation pull requests with hardware results and code improvements are
-welcome. See the [hardware reports](docs/HARDWARE.md) and
-[contribution guide](CONTRIBUTING.md).
+Tried another touchpad? [Report your hardware](https://github.com/Nymeriq/five-pinch/issues), including your laptop model, Linux/GNOME versions, session type, and what worked or failed. Documentation and code pull requests are welcome.
 
-## Curious about the internals?
+See [CONTRIBUTING.md](CONTRIBUTING.md) and the [hardware reports](docs/HARDWARE.md). No claim of universal compatibility is implied.
 
-Five Pinch combines a GNOME Shell extension with a supervised, read-only touchpad
-reader. It does not replace your touchpad driver or modify firmware. Bugs can
-still affect the desktop session, and untested hardware may miss or misread gestures.
+## License
 
-[Technical guide: compatibility, limitations, rollback, and tests](docs/TECHNICAL.md) ·
-[Development notes](docs/DEVELOPMENT.md) · [APT repository](docs/APT.md)
+[MIT](LICENSE). A project by [Nymeriq](https://nymeriq.com).

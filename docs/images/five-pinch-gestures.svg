@@ -3,7 +3,7 @@
 <desc id="desc">Gesture illustration, not a screenshot. Five contacts move inward to open the application grid, and outward to close it.</desc>
 <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#101b30"/><stop offset="1" stop-color="#182e40"/></linearGradient><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 1 1 L 8 5 L 1 9" fill="none" stroke="#69e3c2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <rect width="1200" height="590" rx="24" fill="url(#bg)"/>
-<g font-family="DejaVu Sans, Arial, sans-serif"><text x="54" y="64" fill="#69e3c2" font-size="19" font-weight="bold" letter-spacing="3">FIVE PINCH</text><text x="54" y="113" fill="#f3f7ff" font-size="36" font-weight="bold">Your apps, a gesture away.</text><text x="54" y="148" fill="#b5c5db" font-size="18">Five-finger gestures for MacBooks and other Linux laptops.</text>
+<g font-family="DejaVu Sans, Arial, sans-serif"><text x="54" y="64" fill="#69e3c2" font-size="19" font-weight="bold" letter-spacing="3">FIVE PINCH</text><text x="54" y="113" fill="#f3f7ff" font-size="36" font-weight="bold">Five-finger pinch for GNOME.</text><text x="54" y="148" fill="#b5c5db" font-size="18">For MacBooks and other Linux touchpads.</text>
 <rect x="54" y="184" width="526" height="323" rx="20" fill="#15243a" stroke="#35475d"/>
 <rect x="81" y="211" width="232" height="219" rx="20" fill="#1c3048" stroke="#51677f"/>
 <circle cx="197.0" cy="252.0" r="9" fill="#a9bcd2"/><path d="M 197.0 264.0 L 197.0 294.0" stroke="#69e3c2" stroke-width="3" marker-end="url(#arrow)"/>
