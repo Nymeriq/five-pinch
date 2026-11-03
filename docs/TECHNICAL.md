@@ -32,7 +32,8 @@ A manual user copy overrides the Debian package. **Use packaged version** in
 the setup application disables that copy and backs it up under
 `~/.local/state/five-pinch/backups/`, preserving gesture settings. Log out and
 back in, then open Five Pinch Settings again. XDG locations are respected.
-Root package scripts never modify user home directories or enable extensions.
+Root package scripts never enable extensions or edit user settings databases directly.
+Removal delegates Five Pinch cleanup to reachable sessions as the owning user.
 
 ## What hardware can try it?
 
@@ -70,12 +71,13 @@ The child reader stops; there is no standalone root daemon or autostart service.
 To remove the package:
 
 ```bash
-gnome-extensions disable five-pinch@local.codex
-sudo apt remove five-pinch
+five-pinch-reset
+sudo apt purge five-pinch
 ```
 
-Log out and back in to unload any already-loaded Shell code. Personal settings
-and manual-install backups remain. To go back to the previous package, download
+Log out and back in to unload any already-loaded Shell code. Five Pinch settings are reset for the current user;
+intentional manual-install backups remain. See [full removal](APT.md#revert-or-remove)
+for shared machines and repository cleanup. To go back to the previous package, download
 0.4.0 from Releases:
 
 ```bash
@@ -124,14 +126,14 @@ python3 tests/check_shell_logic.py
 glib-compile-schemas --strict schemas
 desktop-file-validate packaging/five-pinch-settings.desktop
 udevadm verify packaging/70-five-pinch.rules
-python3 packaging/build_deb.py --output ../five-pinch_0.6.0_all.deb --staging-parent ../work/deb-build
+python3 packaging/build_deb.py --output ../five-pinch_0.6.1_all.deb --staging-parent ../work/deb-build
 ```
 
 Python 3, `dpkg-deb`, and `glib-compile-schemas` are needed to build. Debian
 architecture `all` means interpreted code/data, not universal hardware support.
 The builder never installs the package or runs maintainer scripts.
 
-47 Python tests cover geometry, native frames, compatibility/discovery,
+52 Python tests cover geometry, native frames, compatibility/discovery,
 normalized fallback, control leases and setup migration. Eight protocol checks
 and 13 mocked Shell checks cover action dispatch and lifecycle guards. None
 substitutes for community hardware tests.

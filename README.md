@@ -48,7 +48,7 @@ The setup requires `curl` and `gpg`. If either is missing, install them with
 [What does the repository setup change?](docs/APT.md)
 
 Prefer a standalone installer? [Download the latest `.deb`](https://github.com/Nymeriq/five-pinch/releases/latest),
-open Terminal in your Downloads folder, and run `sudo apt install ./five-pinch_0.6.0_all.deb`.
+open Terminal in your Downloads folder, and run `sudo apt install ./five-pinch_0.6.1_all.deb`.
 Use the filename you downloaded. This option does not add the update repository.
 
 > [!IMPORTANT]
@@ -71,6 +71,7 @@ Use the filename you downloaded. This option does not add the update repository.
 **Gesture sensitivity** offers three modes, applied immediately:
 
 - **Balanced** (default): less movement is needed than in the original release.
+  Confirmed comfortable in the reference MacBook Pro user trial.
 - **Relaxed**: smaller movements can trigger a gesture; try this if casual pinches
   are missed. If unwanted gestures occur, switch back to Balanced or Original.
 - **Original (firm movement)**: the same recognition thresholds as 0.5.1.
@@ -122,12 +123,21 @@ To stop it, turn off **Enable recognition** in settings or disable **Five Pinch*
 in the Extensions app. To uninstall:
 
 ```bash
-gnome-extensions disable five-pinch@local.codex
-sudo apt remove five-pinch
+five-pinch-reset
+sudo apt purge five-pinch
+sudo apt update
 ```
 
-Log out and back in after removal. See the [APT guide](docs/APT.md) for removing
-the package repository or returning to an older version.
+**Log out and back in after removal** to finish unloading Shell code and refresh
+normal touchpad permissions. `five-pinch-reset` runs as your own user (without
+sudo): it disables Five Pinch and clears its gesture settings. Package removal
+also attempts this for users with reachable session buses. `purge` removes the
+app, its udev rule, and its optional APT source/key/pinning files.
+
+On shared machines, each user should run `five-pinch-reset` in their own session
+before removal; settings belonging to logged-out users are not edited as root.
+Your intentional backups and hardware recordings are kept. Other extensions,
+drivers and desktop preferences are left alone. [Removal and rollback details](docs/APT.md#revert-or-remove).
 
 ## Help it work on more laptops
 

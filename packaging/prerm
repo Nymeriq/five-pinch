@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+# Never reset user settings during upgrade, deconfigure or failed-upgrade recovery.
+case "$1" in
+    remove)
+        /usr/bin/python3 -I /usr/bin/five-pinch-reset --active-sessions || \
+            echo 'Five Pinch: log out after removal to finish unloading the extension.' >&2
+        ;;
+esac
+exit 0

@@ -11,7 +11,9 @@ if [[ ! -d $dest || -L $dest ]]; then
     exit 0
 fi
 gnome-extensions disable "$uuid"
-# Remove only the known extension, preserving all settings and other extensions.
+# Reset only our settings and Shell membership as the current user.
+/usr/bin/python3 -I "$(dirname "$0")/packaging/five-pinch-reset.py"
+# Remove only the known extension, preserving other extensions.
 /usr/bin/python3 - "$dest" <<'PY'
 import json, pathlib, shutil, sys
 p = pathlib.Path(sys.argv[1])
@@ -19,4 +21,4 @@ if p.name != 'five-pinch@local.codex' or json.loads((p/'metadata.json').read_tex
     raise SystemExit('Unexpected installation path')
 shutil.rmtree(p)
 PY
-echo 'Five Pinch removed. Your settings have been preserved; other extensions were not changed.'
+echo 'Five Pinch removed. Your Five Pinch settings were reset; other extensions were not changed. Log out and back in.'

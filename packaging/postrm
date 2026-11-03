@@ -9,4 +9,10 @@ case "$1" in
         echo 'Five Pinch removed. Log out and back in to unload any running extension.'
         ;;
 esac
+if [ "$1" = purge ]; then
+    # Only the three files created by our optional repository setup script.
+    rm -f /etc/apt/sources.list.d/five-pinch.sources \
+          /etc/apt/preferences.d/five-pinch \
+          /etc/apt/keyrings/five-pinch.gpg
+fi
 exit 0

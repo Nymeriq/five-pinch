@@ -51,14 +51,43 @@ sudo apt install --allow-downgrades five-pinch=0.4.0
 To keep that version instead of upgrading it again, use `sudo apt-mark hold
 five-pinch`; undo with `sudo apt-mark unhold five-pinch`.
 
-To remove Five Pinch, disable it in Extensions first, then run `sudo apt remove
-five-pinch` and log out/back in. Removing the program does not remove the source.
-To unsubscribe from updates too, remove only these repository setup files:
+For a complete uninstall, run the first command as your own desktop user,
+without sudo, while the app is still installed:
 
 ```bash
-sudo rm /etc/apt/sources.list.d/five-pinch.sources
-sudo rm /etc/apt/preferences.d/five-pinch
-sudo rm /etc/apt/keyrings/five-pinch.gpg
+five-pinch-reset
+sudo apt purge five-pinch
+sudo apt update
+```
+
+**Save your work, log out, and log back in afterwards.** The reset disables the
+running extension, stops its supervised reader and resets only Five Pinch's
+settings. It removes only Five Pinch's UUID from GNOME's enabled/disabled
+extension lists, preserving other extensions and their ordering. The package
+removal hook attempts the same cleanup in reachable user sessions. Upgrades
+never invoke this reset and retain your gesture settings.
+
+The package owns its installed extension, launcher, reset command and udev rule;
+APT removes these. Since 0.6.1, `purge` also removes the three repository files
+created by our setup: `/etc/apt/sources.list.d/five-pinch.sources`,
+`/etc/apt/preferences.d/five-pinch`, and `/etc/apt/keyrings/five-pinch.gpg`.
+Ordinary `apt remove` leaves these repository files so reinstalling remains easy.
+Touchpad access is refreshed by udev; logout/login finishes releasing any
+previous session access and unloads any remaining Shell code. Five Pinch does
+not change drivers, firmware or other gesture extensions, so those need no restore.
+
+For shared machines, each user should run `five-pinch-reset` before removal.
+Logged-out users' home directories/databases are not modified by root. If a
+session bus cannot be reached, cleanup cannot be guaranteed for that user's
+stored settings; the removal hook prints a warning for failed session cleanup.
+Intentional source/manual-install backups and diagnostic recordings are retained,
+not silently deleted. A separate manual installation can override the package;
+remove that via its own `uninstall.sh` if applicable.
+
+For packages older than 0.6.1, remove repository files manually if needed:
+
+```bash
+sudo rm -f /etc/apt/sources.list.d/five-pinch.sources /etc/apt/preferences.d/five-pinch /etc/apt/keyrings/five-pinch.gpg
 sudo apt update
 ```
 

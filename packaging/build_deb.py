@@ -9,7 +9,7 @@ import shutil
 import subprocess
 import tempfile
 
-VERSION = '0.6.0'
+VERSION = '0.6.1'
 UUID = 'five-pinch@local.codex'
 SOURCE = Path(__file__).resolve().parents[1]
 
@@ -31,19 +31,21 @@ def build(output, staging_parent):
         subprocess.run(['glib-compile-schemas', '--strict', str(extension / 'schemas')], check=True)
         for src, dest in [
             ('five-pinch-settings.py', 'usr/bin/five-pinch-settings'),
+            ('five-pinch-reset.py', 'usr/bin/five-pinch-reset'),
             ('five-pinch-settings.desktop', 'usr/share/applications/five-pinch-settings.desktop'),
             ('70-five-pinch.rules', 'usr/lib/udev/rules.d/70-five-pinch.rules')]:
             path = root / dest
             path.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(SOURCE / 'packaging' / src, path)
         (root / 'usr/bin/five-pinch-settings').chmod(0o755)
+        (root / 'usr/bin/five-pinch-reset').chmod(0o755)
         doc = root / 'usr/share/doc/five-pinch'
         doc.mkdir(parents=True)
         shutil.copyfile(SOURCE / 'README.md', doc / 'README.md')
         (doc / 'copyright').write_text('Five Pinch\nCopyright (c) 2026 Five Pinch contributors\n\n' +
                                         (SOURCE / 'LICENSE').read_text())
         with gzip.GzipFile(filename=str(doc / 'changelog.gz'), mode='wb', mtime=0) as file:
-            file.write(b'five-pinch (0.6.0) experimental; urgency=low\n\n'
+            file.write(b'five-pinch (0.6.1) experimental; urgency=low\n\n'
                        b'  * Add balanced and relaxed recognition profiles with an original-mode fallback.\n\n'
                        b' -- Five Pinch contributors  Tue, 03 Nov 2026 12:00:00 +0100\n')
         control = root / 'DEBIAN'
@@ -56,13 +58,13 @@ Priority: optional
 Architecture: all
 Maintainer: Five Pinch contributors
 Installed-Size: {size}
-Depends: gnome-shell (>= 50), gnome-shell (<< 51), python3 (>= 3.10), python3-gi, gir1.2-adw-1, libglib2.0-bin, dconf-gsettings-backend | gsettings-backend, udev
+Depends: gnome-shell (>= 50), gnome-shell (<< 51), python3 (>= 3.10), python3-gi, gir1.2-adw-1, libglib2.0-bin, dconf-cli, util-linux, dconf-gsettings-backend | gsettings-backend, udev
 Description: Experimental five-finger pinch gestures for GNOME 50
  English settings, app-grid and overview actions, and a supervised read-only
  touchpad recognizer. Any udev-classified touchpad can be tried, regardless of brand or bus.
  Requires GNOME 50 on Wayland and at least five coordinate slots.
 ''')
-        for name in ['postinst', 'postrm']:
+        for name in ['prerm', 'postinst', 'postrm']:
             shutil.copyfile(SOURCE / 'packaging' / name, control / name)
             (control / name).chmod(0o755)
         checksums = []
@@ -74,7 +76,8 @@ Description: Experimental five-finger pinch gestures for GNOME 50
         # as the root directory or group-writable installed source files.
         root.chmod(0o755)
         executables = {root / 'usr/bin/five-pinch-settings',
-                       control / 'postinst', control / 'postrm'}
+                       root / 'usr/bin/five-pinch-reset',
+                       control / 'prerm', control / 'postinst', control / 'postrm'}
         for path in root.rglob('*'):
             path.chmod(0o755 if path.is_dir() or path in executables else 0o644)
         subprocess.run(['dpkg-deb', '--root-owner-group', '-Zxz', '--build', str(root), str(output.resolve())], check=True)
