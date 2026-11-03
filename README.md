@@ -50,7 +50,7 @@ The setup requires `curl` and `gpg`. If either is missing, install them with
 [What does the repository setup change?](docs/APT.md)
 
 Prefer a standalone installer? [Download the latest `.deb`](https://github.com/Nymeriq/five-pinch/releases/latest),
-open Terminal in your Downloads folder, and run `sudo apt install ./five-pinch_0.7.1_all.deb`.
+open Terminal in your Downloads folder, and run `sudo apt install ./five-pinch_0.7.2_all.deb`.
 Use the filename you downloaded. This option does not add the update repository.
 
 > [!IMPORTANT]
@@ -74,7 +74,7 @@ Use the filename you downloaded. This option does not add the update repository.
 
 - **Balanced** (default): less movement is needed than in the original release.
   Confirmed comfortable in the reference MacBook Pro user trial.
-- **Relaxed**: smaller movements can trigger a gesture; try this if casual pinches
+- **Sensitive**: smaller movements can trigger a gesture; try this if casual pinches
   are missed. If unwanted gestures occur, switch back to Balanced or Original.
 - **Original**: the same recognition thresholds as 0.5.1.
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.2 — local UI review build
+
+- Rename the highest sensitivity option from Relaxed to Sensitive.
+- Keep the stored `relaxed` value and recognition thresholds unchanged.
+
 ## 0.7.1 — local UI review build
 
 - Main preferences contain only Enable gestures, Pinch in, Pinch out and Sensitivity.

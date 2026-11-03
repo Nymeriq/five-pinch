@@ -126,7 +126,7 @@ python3 tests/check_shell_logic.py
 glib-compile-schemas --strict schemas
 desktop-file-validate packaging/five-pinch-settings.desktop
 udevadm verify packaging/70-five-pinch.rules
-python3 packaging/build_deb.py --output ../five-pinch_0.7.1_all.deb --staging-parent ../work/deb-build
+python3 packaging/build_deb.py --output ../five-pinch_0.7.2_all.deb --staging-parent ../work/deb-build
 ```
 
 Python 3, `dpkg-deb`, and `glib-compile-schemas` are needed to build. Debian
@@ -162,7 +162,7 @@ want to override it.
 | --- | --- | --- | --- | --- | --- |
 | Original | 18% | 3.0 | 80 ms | 2 s | 6% |
 | Balanced (default) | 12% | 1.8 | 60 ms | 3 s | 4% |
-| Relaxed | 8% | 1.2 | 60 ms | 3 s | 2.5% |
+| Sensitive | 8% | 1.2 | 60 ms | 3 s | 2.5% |
 
 Distances are millimetres on devices with physical resolution, otherwise the
 normalized coordinate units described above. At least seven of ten finger pairs

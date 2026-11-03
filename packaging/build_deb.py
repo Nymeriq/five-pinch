@@ -9,7 +9,7 @@ import shutil
 import subprocess
 import tempfile
 
-VERSION = '0.7.1'
+VERSION = '0.7.2'
 UUID = 'five-pinch@local.codex'
 SOURCE = Path(__file__).resolve().parents[1]
 
@@ -49,8 +49,8 @@ def build(output, staging_parent):
         (doc / 'copyright').write_text('Five Pinch\nCopyright (c) 2026 Five Pinch contributors\n\n' +
                                         (SOURCE / 'LICENSE').read_text())
         with gzip.GzipFile(filename=str(doc / 'changelog.gz'), mode='wb', mtime=0) as file:
-            file.write(b'five-pinch (0.7.1) experimental; urgency=low\n\n'
-                       b'  * Simplify preferences and open settings directly for active installations.\n\n'
+            file.write(b'five-pinch (0.7.2) experimental; urgency=low\n\n'
+                       b'  * Rename the highest sensitivity option to Sensitive; preserve saved settings.\n\n'
                        b' -- Five Pinch contributors  Tue, 03 Nov 2026 12:00:00 +0100\n')
         control = root / 'DEBIAN'
         control.mkdir()

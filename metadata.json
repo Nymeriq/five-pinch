@@ -4,5 +4,5 @@
   "description": "Experimental five-finger pinch for Linux touchpads. Includes a read-only recognizer supervised by GNOME Shell.",
   "shell-version": ["50"],
   "settings-schema": "org.gnome.shell.extensions.five-pinch",
-  "version": 15
+  "version": 16
 }

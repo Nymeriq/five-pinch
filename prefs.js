@@ -44,7 +44,7 @@ export default class FivePinchPreferences extends ExtensionPreferences {
         gestures.add(choice('pinch-in', 'Pinch in', actions));
         gestures.add(choice('pinch-out', 'Pinch out', actions));
         gestures.add(choice('sensitivity', 'Sensitivity', [
-            ['original', 'Original'], ['balanced', 'Balanced'], ['relaxed', 'Relaxed'],
+            ['original', 'Original'], ['balanced', 'Balanced'], ['relaxed', 'Sensitive'],
         ]));
 
         const advancedGroup = new Adw.PreferencesGroup();
