@@ -5,18 +5,18 @@ Origin: Nymeriq-Five-Pinch
 Label: Five Pinch
 Suite: stable
 Codename: five-pinch
-Date: Sat, 31 Oct 2026 14:41:46 GMT
+Date: Tue, 03 Nov 2026 10:22:58 GMT
 Description: Five Pinch packages for GNOME 50 on Wayland
 SHA256:
- 3322c19af68ac9a9626c74b9cf49ec89433245f2083a33f97985c841c6b86d3e             2457 Packages
- 36477686b2584a3e850ecb3ed1d236af6310f2e167995e3a0e6fe9c59a3b401d              835 Packages.gz
+ 8dc4689567fb77a3b3f2f352de20d01548e4d7fd0618695cbc322902d85aab10             3300 Packages
+ bdfc354bcabd41c194ff9a0ce2ba644a954cdee4bcc17f9646c707e6cf1b88c8              960 Packages.gz
 SHA512:
- 35787da17a2f6c09fe71a8079091a98158f0951e712ac361097165129b98ba8416fbc6f6fac5ef772049ca67ad7b0f651c1bfa5de6af901712649d5e8c1cdb28             2457 Packages
- 26d75194f09368c39abd59fe629463df398eba386ae51d1b90d877a821685477c663df74bea93e5aec8ad99d8231ace6d02cf614d8b2bce88d29e24eb974436a              835 Packages.gz
+ 4e4dbfb37a4548ff181974393af2831c9421ddcb9c570668fdc73fe29e7c25c4c6cf8d38fd76ad62fa7baa4433e3ef14b5c4f25994c47a1179cc528e0f15282c             3300 Packages
+ e5708bfa0285d2409c1a363d7f9c5a89a15033d969971b9357667f258391a1006b1239b6e930d6d11696f28f4c68a3d795d32cdbf2283ff0a529e71497077d9d              960 Packages.gz
 -----BEGIN PGP SIGNATURE-----
 
-iHUEARYKAB0WIQRuDBe+7wIDuhoNu52R84Olj5uflwUCauX+KgAKCRCR84Olj5uf
-l4h+AQDtMwvudgbsqok1l7zlBwTBisSL7Y7AI+KH0dfwwDZ9/AD+LeOUosAx8bGs
-eMVpCp9zeG6vIKAE2h28fyr3MWm8dAw=
-=y5b6
+iHUEARYKAB0WIQRuDBe+7wIDuhoNu52R84Olj5uflwUCaum2AgAKCRCR84Olj5uf
+l3nNAP9mO4eLPztEGLve/WGW5jyfnngUPV9nUKrx0bQG9Ar6NgD/a7gZxJhxf8yQ
+xxyioCGF23dVy5M5TSoBZv+NosLNjwo=
+=vgqq
 -----END PGP SIGNATURE-----
