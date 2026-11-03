@@ -5,7 +5,7 @@ import Clutter from 'gi://Clutter';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 import {PinchTailGuard} from './pinchTailGuard.js';
-import {validCandidate, validPinchEnd} from './protocol.js';
+import {validCandidate, validContactState} from './protocol.js';
 
 export default class FivePinch extends Extension {
     enable() {
@@ -68,9 +68,11 @@ export default class FivePinch extends Extension {
         // Clutter milliseconds wrap at 2^32; map them to current monotonic time.
         const elapsedMs = (Math.floor(now / 1000) - event.get_time()) >>> 0;
         const at = Math.floor(now / 1000) * 1000 - elapsedMs * 1000;
-        return this._tailGuard.filter(node, name,
-            event.get_touchpad_gesture_finger_count(), at, now)
-            ? Clutter.EVENT_STOP : Clutter.EVENT_PROPAGATE;
+        const fingers = event.get_touchpad_gesture_finger_count();
+        const stop = this._tailGuard.filter(node, name, fingers, at, now);
+        if (name === 'begin')
+            this._tailStatus(`${fingers}-finger swipe on ${node ?? 'unknown device'}: ${stop ? 'blocked pinch tail' : 'passed through'}.`);
+        return stop ? Clutter.EVENT_STOP : Clutter.EVENT_PROPAGATE;
     }
 
     _initSession() {
@@ -212,9 +214,20 @@ export default class FivePinch extends Extension {
             return;
         }
         const now = GLib.get_monotonic_time();
-        if (validPinchEnd(message, now, run.sequence)) {
+        if (validContactState(message, now, run.sequence)) {
             run.sequence = message.sequence;
-            this._tailGuard?.release(message.device, message.monotonic_us, now);
+            if (message.type === 'five-contact') {
+                const actions = ['pinch-in', 'pinch-out'].map(k => this._settings.get_string(k));
+                if (this._permitted() && this._settings.get_boolean('protect-pinch-tail') &&
+                    actions.some(action => action !== 'disabled' && action !== 'diagnostic')) {
+                    this._tailGuard?.arm(message.device, message.monotonic_us, now);
+                    this._tailStatus(`Five contacts: protecting ${message.device} until all fingers lift.`);
+                }
+            } else {
+                this._tailGuard?.release(message.device, message.monotonic_us, now);
+                if (this._settings.get_string('tail-status').startsWith('Five contacts:'))
+                    this._tailStatus('All fingers lifted; no new swipe BEGIN observed during protection.');
+            }
             return;
         }
         if (!validCandidate(message, now, run.sequence))
@@ -226,9 +239,6 @@ export default class FivePinch extends Extension {
         const action = this._settings.get_string(`pinch-${message.direction}`);
         this._settings.set_string('last-event',
             `${++this._serial}. ${message.direction === 'in' ? 'Pinch in' : 'Pinch out'} · ${action}`);
-        if (action !== 'disabled' && action !== 'diagnostic' &&
-            this._settings.get_boolean('protect-pinch-tail'))
-            this._tailGuard?.arm(message.device, message.monotonic_us, now);
         switch (action) {
         case 'apps': Main.overview.showApps(); break;
         case 'apps-close':
@@ -240,6 +250,11 @@ export default class FivePinch extends Extension {
         case 'hide': Main.overview.hide(); break;
         // disabled/diagnostic never perform a Shell action.
         }
+    }
+
+    _tailStatus(message) {
+        if (this._settings && this._settings.get_string('tail-status') !== message)
+            this._settings.set_string('tail-status', message);
     }
 
     _status(message) {

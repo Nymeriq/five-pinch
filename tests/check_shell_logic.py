@@ -98,7 +98,7 @@ const swipe = (phase, fingers, device = node, at = stamp) => ({
 for (const fingers of [1, 2, 3, 4])
     check(extension._handleSwipe(swipe(1, fingers)) === 0);
 extension._lastAction = 0;
-extension._message(run, {...candidate(9), device: node, monotonic_us: stamp});
+extension._message(run, {type: 'five-contact', sequence: 9, device: node, monotonic_us: stamp});
 check(extension._handleSwipe(swipe(1, 4)) === 1);
 check(extension._handleSwipe(swipe(2, 4)) === 1);
 check(extension._handleSwipe(swipe(3, 4)) === 1);

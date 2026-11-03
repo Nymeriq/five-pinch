@@ -198,12 +198,15 @@ class Touchpad:
                     self.ready = False
                     self.detector.clear()
                     continue
-                if not self.ready:
-                    self.ready = not points and not self.buttons
-                    continue
                 if not points and getattr(self, 'tail_pending', False):
                     self.tail_pending = False
                     results.append({'event': 'pinch-released', 'time': now})
+                if not self.ready:
+                    self.ready = not points and not self.buttons
+                    continue
+                if len(points) == 5 and not getattr(self, 'tail_pending', False):
+                    self.tail_pending = True
+                    results.append({'event': 'five-contact', 'time': now})
                 candidate = self.detector.frame(now, points, bool(self.buttons))
                 if candidate:
                     self.tail_pending = True
@@ -244,7 +247,7 @@ def run(device_path=None, sensitivity='balanced'):
                 try:
                     for candidate in touchpad.read():
                         sequence += 1
-                        message = {'type': 'pinch-end' if candidate['event'] == 'pinch-released' else 'pinch',
+                        message = {'type': {'pinch-released': 'pinch-end', 'five-contact': 'five-contact'}.get(candidate['event'], 'pinch'),
                                    'device': touchpad.path, 'sequence': sequence,
                                    'monotonic_us': int(candidate['time'] * 1000000)}
                         if message['type'] == 'pinch':

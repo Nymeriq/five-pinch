@@ -9,7 +9,7 @@ import shutil
 import subprocess
 import tempfile
 
-VERSION = '0.6.2'
+VERSION = '0.6.3'
 UUID = 'five-pinch@local.codex'
 SOURCE = Path(__file__).resolve().parents[1]
 
@@ -45,8 +45,8 @@ def build(output, staging_parent):
         (doc / 'copyright').write_text('Five Pinch\nCopyright (c) 2026 Five Pinch contributors\n\n' +
                                         (SOURCE / 'LICENSE').read_text())
         with gzip.GzipFile(filename=str(doc / 'changelog.gz'), mode='wb', mtime=0) as file:
-            file.write(b'five-pinch (0.6.2) experimental; urgency=low\n\n'
-                       b'  * Add a reversible, per-touchpad protection against pinch-tail swipes.\n\n'
+            file.write(b'five-pinch (0.6.3) experimental; urgency=low\n\n'
+                       b'  * Add a reversible, five-contact-cycle protection against pinch-tail swipes.\n\n'
                        b' -- Five Pinch contributors  Tue, 03 Nov 2026 12:00:00 +0100\n')
         control = root / 'DEBIAN'
         control.mkdir()

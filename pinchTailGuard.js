@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Filter only whole native swipe sequences which BEGIN in a confirmed pinch's
+// Filter only whole native swipe sequences which BEGIN in a five-contact cycle's
 // tail on the same physical input node. Never disable Shell's swipe trackers.
 export class PinchTailGuard {
     constructor() { this.reset(); }

@@ -83,15 +83,26 @@ class NativeInputTests(unittest.TestCase):
         self.assertEqual([r['event'] for r in result], ['pinch-released'])
         self.assertEqual(self.send([(0, 0, 0)], self.start + .12), [])
 
-    def test_ordinary_contact_cycle_sends_no_release(self):
+    def test_five_contacts_arm_and_release_without_a_recognized_pinch(self):
         self.send([(0, 0, 0)])
-        self.send(self.hand(ids=True))
-        self.send(self.hand(1.03), self.start + .1)
+        start = self.send(self.hand(ids=True))
+        self.assertEqual([r['event'] for r in start], ['five-contact'])
+        self.assertEqual(self.send(self.hand(1.03), self.start + .1), [])
         lift = []
         for i in range(5):
             lift.extend([(3, 47, i), (3, 57, -1)])
         lift.append((0, 0, 0))
-        self.assertEqual(self.send(lift, self.start + .11), [])
+        self.assertEqual([r['event'] for r in self.send(lift, self.start + .11)], ['pinch-released'])
+
+    def test_four_or_fewer_contacts_never_arm_protection(self):
+        for count in range(1, 5):
+            self.pad.tail_pending = False
+            self.pad.state = Slots(0, 10, 10, 10)
+            self.pad.detector.clear()
+            self.send([(0, 0, 0)])
+            events = self.hand(ids=True)[:count * 4] + [(0, 0, 0)]
+            self.assertEqual(self.send(events), [])
+            self.assertFalse(self.pad.tail_pending)
 
     def test_normalized_coordinates_can_recognize_pinch(self):
         self.pad.state = Slots(0, 10, 20, 10)

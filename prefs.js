@@ -17,7 +17,7 @@ export default class FivePinchPreferences extends ExtensionPreferences {
         settings.bind('enabled', enable, 'active', Gio.SettingsBindFlags.DEFAULT);
         group.add(enable);
         const tail = new Adw.SwitchRow({title: 'Protect pinch ending',
-            subtitle: 'Experimental: suppress a new three/four-finger swipe in a recognized five-finger pinch ending. Independent gestures stay unchanged.'});
+            subtitle: 'Experimental: suppress a new three/four-finger swipe in the ending of an interaction that reached five contacts. Independent gestures stay unchanged.'});
         settings.bind('protect-pinch-tail', tail, 'active', Gio.SettingsBindFlags.DEFAULT);
         group.add(tail);
         const profiles = ['original', 'balanced', 'relaxed'];
@@ -55,7 +55,7 @@ export default class FivePinchPreferences extends ExtensionPreferences {
         }
         const statusGroup = new Adw.PreferencesGroup({title: 'Status'});
         page.add(statusGroup);
-        for (const [key, title] of [['status', 'Recognizer'], ['last-event', 'Last gesture']]) {
+        for (const [key, title] of [['status', 'Recognizer'], ['last-event', 'Last gesture'], ['tail-status', 'Pinch ending protection']]) {
             const row = new Adw.ActionRow({title, subtitle: settings.get_string(key)});
             settings.bind(key, row, 'subtitle', Gio.SettingsBindFlags.GET);
             statusGroup.add(row);

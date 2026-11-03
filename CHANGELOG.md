@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.6.3 — local test build
+
+- Arm pinch-tail protection at five simultaneous contacts, before the pinch
+  action threshold. This covers early thumb/index lift even if no action fired.
+- Keep protection through that contact cycle's full hand lift, with the existing
+  three-second watchdog. Independent <=4-contact cycles never arm it.
+- Show the latest native swipe filter decision in settings for diagnosis.
+- Do not cancel native swipes already underway before the contact message arrives.
+- Live testing is pending; 0.6.2 did not resolve the reference user's symptom.
+
 ## 0.6.2 — local test build
 
 - Add optional Protect pinch ending, scoped to the same physical touchpad and
