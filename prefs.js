@@ -7,66 +7,71 @@ import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/ex
 export default class FivePinchPreferences extends ExtensionPreferences {
     fillPreferencesWindow(window) {
         const settings = this.getSettings();
-        window.set_default_size(620, 600);
+        const signals = [];
+        window.set_default_size(520, 540);
+        window.set_search_enabled(false);
         Gtk.IconTheme.get_for_display(window.get_display()).add_search_path(`${this.path}/icons`);
         const page = new Adw.PreferencesPage({title: 'Five Pinch', icon_name: 'io.github.Nymeriq.FivePinch'});
         window.add(page);
-        const group = new Adw.PreferencesGroup({title: 'Five-finger pinch',
-            description: 'GNOME 50 / Wayland. Any touchpad may be tried; tested on MacBook Pro 2017 only. Lift all fingers between gestures.'});
-        page.add(group);
-        const enable = new Adw.SwitchRow({title: 'Enable recognition'});
-        settings.bind('enabled', enable, 'active', Gio.SettingsBindFlags.DEFAULT);
-        group.add(enable);
-        const tail = new Adw.SwitchRow({title: 'Protect pinch ending',
-            subtitle: 'Experimental: suppress a new three/four-finger swipe in the ending of an interaction that reached five contacts. Independent gestures stay unchanged.'});
-        settings.bind('protect-pinch-tail', tail, 'active', Gio.SettingsBindFlags.DEFAULT);
-        group.add(tail);
-        const rinertia = new Adw.SwitchRow({title: 'Protect against rinertia scrolling',
-            subtitle: 'Automatically filters rinertia Virtual Device scrolling during five-finger interactions and their momentum tail. New independent gestures restore scrolling. Does not stop rinertia.'});
-        settings.bind('protect-rinertia', rinertia, 'active', Gio.SettingsBindFlags.DEFAULT);
-        group.add(rinertia);
-        const profiles = ['original', 'balanced', 'relaxed'];
-        const sensitivity = new Adw.ComboRow({title: 'Gesture sensitivity',
-            subtitle: 'Balanced needs less movement. Relaxed is more sensitive. Original restores the previous feel.',
-            model: Gtk.StringList.new(['Original (firm movement)', 'Balanced', 'Relaxed (small movement)']),
-            selected: Math.max(0, profiles.indexOf(settings.get_string('sensitivity')))});
-        sensitivity.connect('notify::selected', () => settings.set_string('sensitivity', profiles[sensitivity.selected] ?? 'balanced'));
-        const sensitivityId = settings.connect('changed::sensitivity', () => {
-            sensitivity.selected = Math.max(0, profiles.indexOf(settings.get_string('sensitivity')));
-        });
-        window.connect('close-request', () => { settings.disconnect(sensitivityId); return false; });
-        group.add(sensitivity);
-        const device = new Adw.EntryRow({title: 'Touchpad device path (optional)'});
-        device.get_delegate().set_placeholder_text('/dev/input/event7');
-        device.set_tooltip_text('Full device path, for example /dev/input/event7. Leave blank for automatic selection.');
-        settings.bind('device-path', device, 'text', Gio.SettingsBindFlags.DEFAULT);
-        group.add(device);
-        group.add(new Adw.ActionRow({title: 'Choosing a touchpad',
-            subtitle: 'Leave blank for automatic selection, or enter a full path such as /dev/input/event7. Find it with: sudo libinput list-devices (Kernel path). The event number may change after reconnecting or restarting.',
-            subtitle_selectable: true}));
-        const values = ['disabled', 'diagnostic', 'apps', 'apps-close', 'overview', 'hide'];
-        const labels = ['Disabled', 'Detect only (no action)',
-            'Open app grid', 'Close app grid',
-            'Open overview', 'Close overview'];
-        for (const [key, title] of [['pinch-in', 'Pinch in'], ['pinch-out', 'Pinch out']]) {
-            const row = new Adw.ComboRow({title, model: Gtk.StringList.new(labels),
+
+        const toggle = (key, title) => {
+            const row = new Adw.SwitchRow({title});
+            settings.bind(key, row, 'active', Gio.SettingsBindFlags.DEFAULT);
+            return row;
+        };
+        const choice = (key, title, options) => {
+            const values = options.map(([value]) => value);
+            const row = new Adw.ComboRow({title,
+                model: Gtk.StringList.new(options.map(([, label]) => label)),
                 selected: Math.max(0, values.indexOf(settings.get_string(key)))});
-            row.connect('notify::selected', () => settings.set_string(key, values[row.selected] ?? 'disabled'));
-            const id = settings.connect(`changed::${key}`, () => {
-                row.selected = Math.max(0, values.indexOf(settings.get_string(key)));
+            row.connect('notify::selected', () => {
+                if (row.selected < values.length)
+                    settings.set_string(key, values[row.selected]);
             });
-            window.connect('close-request', () => { settings.disconnect(id); return false; });
-            group.add(row);
-        }
-        const statusGroup = new Adw.PreferencesGroup({title: 'Status'});
-        page.add(statusGroup);
-        for (const [key, title] of [['status', 'Recognizer'], ['last-event', 'Last gesture'], ['tail-status', 'Pinch ending protection']]) {
-            const row = new Adw.ActionRow({title, subtitle: settings.get_string(key)});
+            signals.push(settings.connect(`changed::${key}`, () => {
+                row.selected = Math.max(0, values.indexOf(settings.get_string(key)));
+            }));
+            return row;
+        };
+        const gestures = new Adw.PreferencesGroup();
+        page.add(gestures);
+        gestures.add(toggle('enabled', 'Enable gestures'));
+        const actions = [
+            ['disabled', 'Off'], ['diagnostic', 'Detect only'],
+            ['apps', 'Open app grid'], ['apps-close', 'Close app grid'],
+            ['overview', 'Open overview'], ['hide', 'Close overview'],
+        ];
+        gestures.add(choice('pinch-in', 'Pinch in', actions));
+        gestures.add(choice('pinch-out', 'Pinch out', actions));
+        gestures.add(choice('sensitivity', 'Sensitivity', [
+            ['original', 'Original'], ['balanced', 'Balanced'], ['relaxed', 'Relaxed'],
+        ]));
+
+        const advancedGroup = new Adw.PreferencesGroup();
+        const advanced = new Adw.ExpanderRow({title: 'Advanced'});
+        advancedGroup.add(advanced);
+        page.add(advancedGroup);
+        const device = new Adw.EntryRow({title: 'Touchpad'});
+        device.get_delegate().set_placeholder_text('/dev/input/event7');
+        device.set_tooltip_text('Leave empty for automatic selection.');
+        settings.bind('device-path', device, 'text', Gio.SettingsBindFlags.DEFAULT);
+        advanced.add_row(device);
+        advanced.add_row(toggle('protect-pinch-tail', 'Swipe protection'));
+        advanced.add_row(toggle('protect-rinertia', 'rinertia protection'));
+
+        const diagnosticsGroup = new Adw.PreferencesGroup();
+        const diagnostics = new Adw.ExpanderRow({title: 'Diagnostics'});
+        diagnosticsGroup.add(diagnostics);
+        page.add(diagnosticsGroup);
+        for (const [key, title] of [['status', 'Recognizer'], ['last-event', 'Last gesture'], ['tail-status', 'Protection']]) {
+            const row = new Adw.ActionRow({title, subtitle_selectable: true});
             settings.bind(key, row, 'subtitle', Gio.SettingsBindFlags.GET);
-            statusGroup.add(row);
+            diagnostics.add_row(row);
         }
-        const note = new Adw.ActionRow({title: 'Getting started',
-            subtitle: 'Start with Detect only. Recognition pauses when the session is locked or inactive. Pausing while typing is experimental; other gesture extensions may conflict.'});
-        statusGroup.add(note);
+        window.connect('close-request', () => {
+            for (const id of signals)
+                settings.disconnect(id);
+            return false;
+        });
     }
 }

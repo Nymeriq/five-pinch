@@ -5,7 +5,7 @@
 ## Choosing a touchpad manually
 
 With multiple touchpads, automatic mode picks the first usable event device.
-Leave **Touchpad device path** blank to keep this automatic selection.
+Leave **Advanced → Touchpad** blank to keep this automatic selection.
 To select a particular touchpad, enter its **full Linux input device path**,
 for example `/dev/input/event7`. The placeholder is an example only.
 A device name, a USB/vendor/product ID, or just `event7` is not accepted.
@@ -19,7 +19,7 @@ sudo libinput list-devices
 If the command is missing, install Ubuntu's `libinput-tools` package.
 Find your touchpad's **Device** section and copy the path from **Kernel**
 (shown as **Device node** by some tools), for example `/dev/input/event7`.
-Do not copy a keyboard or mouse entry. The **Recognizer** status in Five Pinch
+Do not copy a keyboard or mouse entry. The **Diagnostics → Recognizer** status in Five Pinch
 Settings reports whether the selected touchpad can be opened and used.
 
 The override takes effect while recognition is enabled. Event numbers can change
@@ -126,14 +126,14 @@ python3 tests/check_shell_logic.py
 glib-compile-schemas --strict schemas
 desktop-file-validate packaging/five-pinch-settings.desktop
 udevadm verify packaging/70-five-pinch.rules
-python3 packaging/build_deb.py --output ../five-pinch_0.7.0_all.deb --staging-parent ../work/deb-build
+python3 packaging/build_deb.py --output ../five-pinch_0.7.1_all.deb --staging-parent ../work/deb-build
 ```
 
 Python 3, `dpkg-deb`, and `glib-compile-schemas` are needed to build. Debian
 architecture `all` means interpreted code/data, not universal hardware support.
 The builder never installs the package or runs maintainer scripts.
 
-55 Python tests cover geometry, native frames, compatibility/discovery,
+59 Python tests cover geometry, native frames, compatibility/discovery,
 normalized fallback, control leases and setup migration. Protocol and pinch-tail checks
 and mocked Shell checks cover action dispatch and lifecycle guards. None
 substitutes for community hardware tests.

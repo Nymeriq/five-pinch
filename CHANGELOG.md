@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.7.1 — local UI review build
+
+- Main preferences contain only Enable gestures, Pinch in, Pinch out and Sensitivity.
+- Put device selection and compatibility switches under Advanced; status under Diagnostics.
+- Remove taglines, explanatory rows, duplicated labels and unnecessary search.
+- Open preferences directly for active installations. Require explicit Enable for
+  inactive extensions and preserve safe manual-install backup migration.
+- Keep all stored setting keys/values, gesture engines, profiles, safeguards and
+  uninstall behavior unchanged. No new UI framework or dependency.
+
 ## 0.7.0 — 2026-11-03
 
 - Publish rinertia virtual-scroll protection, confirmed working by the reference user.

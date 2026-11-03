@@ -50,7 +50,7 @@ The setup requires `curl` and `gpg`. If either is missing, install them with
 [What does the repository setup change?](docs/APT.md)
 
 Prefer a standalone installer? [Download the latest `.deb`](https://github.com/Nymeriq/five-pinch/releases/latest),
-open Terminal in your Downloads folder, and run `sudo apt install ./five-pinch_0.7.0_all.deb`.
+open Terminal in your Downloads folder, and run `sudo apt install ./five-pinch_0.7.1_all.deb`.
 Use the filename you downloaded. This option does not add the update repository.
 
 > [!IMPORTANT]
@@ -61,22 +61,22 @@ Use the filename you downloaded. This option does not add the update repository.
 ### 2. Open settings and try detection
 
 1. Open **Five Pinch Settings** from your applications.
-2. Click **Enable and open settings**.
-3. Leave **Touchpad device path** empty to select your touchpad automatically.
-4. Set both **Pinch in** and **Pinch out** to **Detect only (no action)**,
+2. Click **Enable** if prompted. Active installations open settings directly.
+3. Leave **Advanced → Touchpad** empty to select your touchpad automatically.
+4. Set both **Pinch in** and **Pinch out** to **Detect only**,
    then switch on **Enable recognition**.
 5. Place five fingers on the touchpad and pinch inward or spread outward.
-   **Lift all fingers between gestures.** Check **Last gesture** in the settings.
+   **Lift all fingers between gestures.** Check **Diagnostics → Last gesture**.
 
 ### Adjust the feel
 
-**Gesture sensitivity** offers three modes, applied immediately:
+**Sensitivity** offers three modes, applied immediately:
 
 - **Balanced** (default): less movement is needed than in the original release.
   Confirmed comfortable in the reference MacBook Pro user trial.
 - **Relaxed**: smaller movements can trigger a gesture; try this if casual pinches
   are missed. If unwanted gestures occur, switch back to Balanced or Original.
-- **Original (firm movement)**: the same recognition thresholds as 0.5.1.
+- **Original**: the same recognition thresholds as 0.5.1.
 
 Lift all fingers after switching modes. The change affects recognition, not
 continuous animation: Five Pinch triggers a desktop action when a pinch is
@@ -84,7 +84,7 @@ recognized; it does not animate the grid in proportion to finger movement.
 
 ### Avoid an extra swipe at the end
 
-**Protect pinch ending** is an experimental, optional switch. Once an interaction reaches
+**Advanced → Swipe protection** is an experimental, optional switch. Once an interaction reaches
 five contacts, it filters a new three/four-finger swipe on the same touchpad
 while you lift your fingers, even if the pinch did not cross its action threshold. Independent gestures started with four or fewer
 fingers remain unchanged. It does not change GNOME's global gesture sensitivity.
@@ -96,7 +96,7 @@ revised protection is still pending. The settings show its latest decision under
 
 ### Using rinertia for smooth scrolling?
 
-**Protect against rinertia scrolling** automatically recognizes events from the
+**Advanced → rinertia protection** automatically recognizes events from the
 `rinertia Virtual Device` and filters its scrolling during five-finger
 interactions and their short momentum tail. This prevents leftover scrolling
 from being interpreted as workspace navigation while the app grid is closing.
@@ -125,7 +125,7 @@ nothing happens until you configure them.
 ## Need a hand?
 
 - **The app or extension doesn't appear:** log out and back in after installation.
-- **No gesture is detected:** check **Recognizer** in settings. Keep the device
+- **No gesture is detected:** check **Diagnostics → Recognizer**. Keep the device
   field empty first; if you have multiple touchpads, see
   [how to choose your touchpad](docs/TECHNICAL.md#choosing-a-touchpad-manually).
 - **Gestures behave unexpectedly:** turn off **Enable recognition** and check
