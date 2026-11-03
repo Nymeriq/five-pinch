@@ -16,6 +16,17 @@ export default class FivePinchPreferences extends ExtensionPreferences {
         const enable = new Adw.SwitchRow({title: 'Enable recognition'});
         settings.bind('enabled', enable, 'active', Gio.SettingsBindFlags.DEFAULT);
         group.add(enable);
+        const profiles = ['original', 'balanced', 'relaxed'];
+        const sensitivity = new Adw.ComboRow({title: 'Gesture sensitivity',
+            subtitle: 'Balanced needs less movement. Relaxed is more sensitive. Original restores the previous feel.',
+            model: Gtk.StringList.new(['Original (firm movement)', 'Balanced', 'Relaxed (small movement)']),
+            selected: Math.max(0, profiles.indexOf(settings.get_string('sensitivity')))});
+        sensitivity.connect('notify::selected', () => settings.set_string('sensitivity', profiles[sensitivity.selected] ?? 'balanced'));
+        const sensitivityId = settings.connect('changed::sensitivity', () => {
+            sensitivity.selected = Math.max(0, profiles.indexOf(settings.get_string('sensitivity')));
+        });
+        window.connect('close-request', () => { settings.disconnect(sensitivityId); return false; });
+        group.add(sensitivity);
         const device = new Adw.EntryRow({title: 'Touchpad device path (optional)'});
         device.get_delegate().set_placeholder_text('/dev/input/event7');
         device.set_tooltip_text('Full device path, for example /dev/input/event7. Leave blank for automatic selection.');

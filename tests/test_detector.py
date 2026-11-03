@@ -54,7 +54,7 @@ class RecognitionTests(unittest.TestCase):
         self.assertIsNone(self.d.frame(.2, hand(.7)))
 
     def test_timeout(self):
-        self.assertIsNone(self.d.frame(3, hand(.75)))
+        self.assertIsNone(self.d.frame(4, hand(.75)))
 
     def test_six_contacts(self):
         p = hand(.75)
@@ -72,6 +72,58 @@ class RecognitionTests(unittest.TestCase):
             d = Detector()
             d.frame(0, hand(count=n))
             self.assertIsNone(d.frame(.1, hand(.7, count=n)))
+
+
+class SensitivityTests(unittest.TestCase):
+    def test_small_pinches_need_less_movement(self):
+        for profile, scale, expected in [
+                ('original', .86, False), ('balanced', .86, True),
+                ('original', 1.14, False), ('balanced', 1.14, True),
+                ('balanced', .90, False), ('relaxed', .90, True),
+                ('balanced', 1.10, False), ('relaxed', 1.10, True)]:
+            with self.subTest(profile=profile, scale=scale):
+                d = Detector(profile)
+                d.frame(0, hand())
+                self.assertEqual(d.frame(.1, hand(scale)) is not None, expected)
+
+    def test_slow_pinch_has_more_time(self):
+        for profile in ('balanced', 'relaxed'):
+            d = Detector(profile)
+            d.frame(0, hand())
+            self.assertIsNone(d.frame(1.5, hand(.96)))
+            self.assertEqual(d.frame(2.5, hand(.85))['direction'], 'in')
+        d = Detector('original')
+        d.frame(0, hand())
+        self.assertIsNone(d.frame(2.5, hand(.75)))
+
+    def test_every_profile_rejects_non_pinch_motion(self):
+        for profile in ('original', 'balanced', 'relaxed'):
+            motions = [hand(dx=30), hand(angle=.8), hand(1.03)]
+            one_finger = hand()
+            one_finger[0] = (30, 20)
+            motions.append(one_finger)
+            for points in motions:
+                with self.subTest(profile=profile, points=points):
+                    d = Detector(profile)
+                    d.frame(0, hand())
+                    self.assertIsNone(d.frame(.1, points))
+
+    def test_relaxed_still_requires_absolute_movement(self):
+        tiny = {i: (x * .3, y * .3) for i, (x, y) in hand().items()}
+        d = Detector('relaxed')
+        d.frame(0, tiny)
+        self.assertIsNone(d.frame(.1, {i: (x * .91, y * .91) for i, (x, y) in tiny.items()}))
+
+    def test_every_profile_keeps_contact_and_click_guards(self):
+        for profile in ('original', 'balanced', 'relaxed'):
+            for points, clicked in [(hand(count=4), False), (hand(), True)]:
+                d = Detector(profile)
+                d.frame(0, hand())
+                self.assertIsNone(d.frame(.1, points, clicked))
+                self.assertIsNone(d.frame(.2, hand(.7)))
+                d.frame(.3, {})
+                d.frame(.4, hand())
+                self.assertIsNotNone(d.frame(.5, hand(.7)))
 
 
 class ProtocolTests(unittest.TestCase):

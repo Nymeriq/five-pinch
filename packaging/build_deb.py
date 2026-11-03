@@ -9,7 +9,7 @@ import shutil
 import subprocess
 import tempfile
 
-VERSION = '0.5.1'
+VERSION = '0.6.0'
 UUID = 'five-pinch@local.codex'
 SOURCE = Path(__file__).resolve().parents[1]
 
@@ -43,9 +43,9 @@ def build(output, staging_parent):
         (doc / 'copyright').write_text('Five Pinch\nCopyright (c) 2026 Five Pinch contributors\n\n' +
                                         (SOURCE / 'LICENSE').read_text())
         with gzip.GzipFile(filename=str(doc / 'changelog.gz'), mode='wb', mtime=0) as file:
-            file.write(b'five-pinch (0.5.1) experimental; urgency=low\n\n'
-                       b'  * Explain manual touchpad paths in settings and documentation.\n\n'
-                       b' -- Five Pinch contributors  Sat, 31 Oct 2026 16:00:00 +0100\n')
+            file.write(b'five-pinch (0.6.0) experimental; urgency=low\n\n'
+                       b'  * Add balanced and relaxed recognition profiles with an original-mode fallback.\n\n'
+                       b' -- Five Pinch contributors  Tue, 03 Nov 2026 12:00:00 +0100\n')
         control = root / 'DEBIAN'
         control.mkdir()
         size = sum(p.stat().st_size for p in root.rglob('*') if p.is_file()) // 1024 + 1

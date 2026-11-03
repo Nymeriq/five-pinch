@@ -48,7 +48,7 @@ The setup requires `curl` and `gpg`. If either is missing, install them with
 [What does the repository setup change?](docs/APT.md)
 
 Prefer a standalone installer? [Download the latest `.deb`](https://github.com/Nymeriq/five-pinch/releases/latest),
-open Terminal in your Downloads folder, and run `sudo apt install ./five-pinch_0.5.1_all.deb`.
+open Terminal in your Downloads folder, and run `sudo apt install ./five-pinch_0.6.0_all.deb`.
 Use the filename you downloaded. This option does not add the update repository.
 
 > [!IMPORTANT]
@@ -65,6 +65,19 @@ Use the filename you downloaded. This option does not add the update repository.
    then switch on **Enable recognition**.
 5. Place five fingers on the touchpad and pinch inward or spread outward.
    **Lift all fingers between gestures.** Check **Last gesture** in the settings.
+
+### Adjust the feel
+
+**Gesture sensitivity** offers three modes, applied immediately:
+
+- **Balanced** (default): less movement is needed than in the original release.
+- **Relaxed**: smaller movements can trigger a gesture; try this if casual pinches
+  are missed. If unwanted gestures occur, switch back to Balanced or Original.
+- **Original (firm movement)**: the same recognition thresholds as 0.5.1.
+
+Lift all fingers after switching modes. The change affects recognition, not
+continuous animation: Five Pinch triggers a desktop action when a pinch is
+recognized; it does not animate the grid in proportion to finger movement.
 
 ### 3. Choose what your gestures do
 

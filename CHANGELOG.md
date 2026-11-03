@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.0 — 2026-11-03
+
+- Add Balanced and Relaxed sensitivity profiles for smaller, slower pinches.
+- Keep Original with the exact 0.5.1 thresholds as an immediate fallback.
+- Apply sensitivity changes without logging out once this version is loaded.
+- Preserve five-contact identity, coherent-motion, click and lifecycle guards.
+- Sensitivity thresholds are experimental; live user comparison is still needed.
+
 ## 0.5.0 — 2026-10-31
 
 - Try any Linux touchpad: no brand, name, vendor, product or bus allowlist.

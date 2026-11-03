@@ -6,8 +6,18 @@ import math
 import statistics
 
 
+# Relative scale, absolute pair-distance change, settle time, timeout and
+# pair-direction margin. Absolute distances are mm or normalized units.
+PROFILES = {
+    'original': (0.18, 3.0, 0.080, 2.0, 0.06),
+    'balanced': (0.12, 1.8, 0.060, 3.0, 0.04),
+    'relaxed': (0.08, 1.2, 0.060, 3.0, 0.025),
+}
+
+
 class Detector:
-    def __init__(self):
+    def __init__(self, profile='balanced'):
+        self.scale_threshold, self.distance_threshold, self.settle, self.timeout, self.pair_margin = PROFILES[profile]
         self.clear()
 
     def clear(self):
@@ -34,10 +44,10 @@ class Detector:
             self.ids, self.started = ids, now
             self.base = dict(points)
             return None
-        if ids != self.ids or now < self.started or now - self.started > 2.0:
+        if ids != self.ids or now < self.started or now - self.started > self.timeout:
             self.blocked = True
             return None
-        if now - self.started < 0.080:
+        if now - self.started < self.settle:
             return None
         ratios, changes = [], []
         for a, b in itertools.combinations(ids, 2):
@@ -50,12 +60,12 @@ class Detector:
             changes.append(after - before)
         scale = statistics.median(ratios)
         delta = statistics.median(changes)
-        inward = scale <= 0.82 and delta <= -3.0
-        outward = scale >= 1.18 and delta >= 3.0
+        inward = scale <= 1 - self.scale_threshold and delta <= -self.distance_threshold
+        outward = scale >= 1 + self.scale_threshold and delta >= self.distance_threshold
         if not (inward or outward):
             return None
         # At least 7 of 10 finger pairs must change in the same direction.
-        coherent = sum(r < 0.94 if inward else r > 1.06 for r in ratios)
+        coherent = sum(r < 1 - self.pair_margin if inward else r > 1 + self.pair_margin for r in ratios)
         if coherent < 7:
             return None
         self.blocked = True  # One candidate per complete hand contact cycle.

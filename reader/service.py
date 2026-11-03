@@ -21,7 +21,7 @@ import time
 # Python -I excludes CWD and PYTHONPATH. Only this installed, trusted directory
 # is added after standard-library imports.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from detector import Detector, Slots
+from detector import Detector, Slots, PROFILES
 
 EVENT = struct.Struct('@llHHi')
 
@@ -205,7 +205,7 @@ class Touchpad:
         return results
 
 
-def run(device_path=None):
+def run(device_path=None, sensitivity='balanced'):
     if os.geteuid() == 0:
         status('Do not run as root. Let the extension start the recognizer as your own user.')
         return 1
@@ -226,7 +226,8 @@ def run(device_path=None):
             if lease.started and touchpad is None and boot_time() >= retry:
                 try:
                     touchpad = Touchpad(device_path or find_device())
-                    status(f'Recognition active: {touchpad.name} ({touchpad.coordinate_mode}). Lift all fingers before starting.')
+                    touchpad.detector = Detector(sensitivity)
+                    status(f'Recognition active: {touchpad.name} ({touchpad.coordinate_mode}; {sensitivity}). Lift all fingers before starting.')
                 except PermissionError:
                     status('Cannot read the touchpad. See the installation guide.')
                     retry = boot_time() + 5
@@ -257,6 +258,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--probe', action='store_true', help='Report device capabilities without desktop actions')
     parser.add_argument('--device', help='Optional /dev/input/eventN; otherwise select the first usable touchpad')
+    parser.add_argument('--sensitivity', choices=PROFILES, default='balanced',
+                        help='Gesture sensitivity; original restores the 0.5.1 recognition thresholds')
     args = parser.parse_args()
     if args.probe:
         pad = Touchpad(args.device or find_device())
@@ -269,4 +272,4 @@ if __name__ == '__main__':
         finally:
             pad.close()
     else:
-        raise SystemExit(run(args.device))
+        raise SystemExit(run(args.device, args.sensitivity))
